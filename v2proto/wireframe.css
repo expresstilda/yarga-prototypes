@@ -1,6 +1,6 @@
 /* Neutral presentation of the same structure and interactions. */
 :root{--ink:#292929;--muted:#717171;--red:#444;--red-dark:#222;--paper:#fff;--soft:#f3f3f3;--line:#d9d9d9}
-body{filter:grayscale(1)}
+.footer{filter:grayscale(1)}
 .site-header,.site-header.scrolled,.inner-page .site-header,.site-header.menu-open{background:#fffffff5;color:var(--ink);border-bottom-color:var(--line)}
 .hero{background:#e9e9e9;color:var(--ink)}
 .hero-shade{background:none}
