@@ -21,3 +21,4 @@
 .photo-note{color:#555;background:#ffffffd9;backdrop-filter:none}
 .benefit-card .eyebrow{color:#777}
 button:focus-visible,a:focus-visible,summary:focus-visible{outline-color:#777}
+@media(max-width:700px){.hero-image{display:none}.hero{background:linear-gradient(35deg,transparent 49.9%,#d6d6d6 50%,transparent 50.1%),#e9e9e9}.hero::before{content:"Плейсхолдер изображения кухни";position:absolute;bottom:125px;right:24px;color:#999;font-size:10px}}
