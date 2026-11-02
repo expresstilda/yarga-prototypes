@@ -100,10 +100,10 @@ function wireActions(){
   const benefits=document.getElementById('benefits');if(benefits){const count=()=>{const w=benefits.firstElementChild.getBoundingClientRect().width+parseFloat(getComputedStyle(benefits).gap);const first=Math.round(benefits.scrollLeft/w)+1;const shown=Math.max(1,Math.round(benefits.clientWidth/w));document.getElementById('benefit-count').textContent=`${String(first).padStart(2,'0')}–${String(Math.min(4,first+shown-1)).padStart(2,'0')} / 04`;};benefits.addEventListener('scroll',count,{passive:true});window.addEventListener('resize',count);count();}
 }
 const factorySlides=[
-  {src:'production-01.svg',title:'Работа рук,<br>внимание к материалу',description:'Обрабатываем детали и уделяем внимание тем местам, которые вы будете видеть и трогать каждый день.',alt:'Ручная обработка мебельной детали в мастерской Ярги'},
-  {src:'production-02.svg',title:'Деталь за деталью —<br>единое целое',description:'Работаем с отдельными деревянными элементами: подгоняем, соединяем и собираем будущую конструкцию.',alt:'Склейка деревянных элементов в мастерской Ярги'},
-  {src:'production-03.svg',title:'Характер мебели —<br>в её деталях',description:'Форма, кромка и отделка имеют значение. Кадры мастерской показывают работу мастеров крупным планом.',alt:'Фрезеровка мебельной детали крупным планом'},
-  {src:'production-04.svg',title:'Живая фактура<br>натурального шпона',description:'Работа с древесной фактурой начинается с заготовок. Подбираем материал под характер будущего изделия.',alt:'Заготовки шпона на верстаке в мастерской Ярги'}
+  {src:'production-01.svg',title:'Готовим детали<br>к сборке',description:'Убираем неровности и готовим поверхность деталей к дальнейшей обработке и сборке.',alt:'Ручная обработка мебельной детали в мастерской Ярги'},
+  {src:'production-02.svg',title:'Склеиваем<br>заготовки',description:'Соединяем деревянные заготовки и фиксируем их, пока сохнет клей.',alt:'Склейка деревянных элементов в мастерской Ярги'},
+  {src:'production-03.svg',title:'Обрабатываем детали<br>на станке',description:'Делаем пазы и придаём деталям нужную форму по проекту.',alt:'Фрезеровка мебельной детали крупным планом'},
+  {src:'production-04.svg',title:'Подбираем<br>шпон',description:'Подбираем шпон по рисунку и оттенку, чтобы соседние детали сочетались.',alt:'Заготовки шпона на верстаке в мастерской Ярги'}
 ];
 function wireFactory(){
   const image=document.getElementById('factory-image');if(!image)return;let index=0,visible=false,paused=false;
