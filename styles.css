@@ -30,3 +30,6 @@ dialog{border:0;padding:0;color:var(--ink);max-width:calc(100% - 32px);max-heigh
 .catalog-grid.single-result{grid-template-columns:1fr;max-width:700px}
 @media(max-width:700px){.header-contact .favorites-header{display:inline-flex}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}.benefit-track{scroll-behavior:auto}}
+
+/* Verbatim customer excerpts, with source and publication date. */
+.review-quote{margin:18px 0 0;font-size:13px;line-height:1.8;color:var(--muted);flex:1}.review-author time{display:block;font-size:10px;color:var(--muted);margin-top:5px}.review-author>a{font-size:10px}
