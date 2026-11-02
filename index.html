@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#9c302b">
+  <meta name="description" content="ЯРГА — кухни и корпусная мебель на заказ. Производство в Воронеже. Проектирование, доставка и установка в Москве и Московской области.">
+  <title>ЯРГА — кухни и мебель на заказ от производителя</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" as="image" href="assets/hero-kitchen.webp">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body class="home">
+  <a class="skip-link" href="#main">К содержанию</a>
+  <header id="site-header" class="site-header"></header>
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <img class="hero-image" src="assets/hero-kitchen.webp" alt="Современная кухня в тёплых оттенках с деревянными фасадами и островом" fetchpriority="high" width="1672" height="941">
+      <div class="hero-shade"></div>
+      <div class="container hero-content">
+        <p class="eyebrow light">Мебель по вашим размерам · Москва и МО</p>
+        <h1 id="hero-title">Кухни и мебель<br>на заказ напрямую<br>от производителя</h1>
+        <p class="hero-description">Проектируем и изготавливаем кухни, шкафы, гардеробные и другую корпусную мебель. Производство в Воронеже позволяет предложить Вам лучшую цену.</p>
+        <div class="cta-row">
+          <button class="button button-primary" data-form="measure">Бесплатный замер <span aria-hidden="true">↗</span></button>
+          <button class="button button-glass" data-form="calculate">Рассчитать стоимость <span aria-hidden="true">↗</span></button>
+        </div>
+      </div>
+      <div class="container hero-bottom">
+        <span>Собственное производство</span><i></i><span>Индивидуальный проект</span><i></i><span>От замера до установки</span>
+        <a href="#catalog" class="hero-scroll" aria-label="Перейти в каталог решений">↓</a>
+      </div>
+    </section>
+
+    <section id="catalog" class="section container">
+      <div class="section-heading">
+        <div><p class="eyebrow">Создаём под ваше пространство</p><h2>Каталог решений</h2></div>
+        <p class="section-intro">От кухни до рабочего кабинета — мебель, которая учитывает ваши привычки, планировку и представление об уюте.</p>
+      </div>
+      <div class="catalog-grid" id="catalog-grid"></div>
+    </section>
+
+    <section class="section soft-section" id="approach">
+      <div class="container">
+        <div class="section-heading">
+          <div><p class="eyebrow">Индивидуально. Продуманно. Для вас.</p><h2>Продумано для вашей жизни</h2></div>
+          <div class="rail-controls"><span id="benefit-count">01–03 / 04</span><button class="round-button" data-scroll="benefits" data-direction="-1" aria-label="Предыдущие преимущества">←</button><button class="round-button" data-scroll="benefits" data-direction="1" aria-label="Следующие преимущества">→</button></div>
+        </div>
+        <div class="benefit-track" id="benefits">
+          <article class="benefit-card"><img src="assets/category-wardrobes.webp" alt="Встроенный шкаф по размерам помещения" loading="lazy"><div><p class="eyebrow">Ваши размеры</p><h3>Каждый сантиметр — с пользой</h3><p>Учитываем ниши, высоту потолков и особенности планировки. Продумываем наполнение под то, что будете хранить.</p></div></article>
+          <article class="benefit-card"><img src="assets/category-living.webp" alt="Корпусная мебель для гостиной в едином стиле" loading="lazy"><div><p class="eyebrow">Цельный интерьер</p><h3>Один стиль для всего дома</h3><p>Подбираем сочетающиеся материалы и оттенки для кухни, гостиной и систем хранения — вместе или поэтапно.</p></div></article>
+          <article class="benefit-card"><img src="assets/category-kitchens.webp" alt="Кухня с окрашенными и деревянными фасадами" loading="lazy"><div><p class="eyebrow">Напрямую от производителя</p><h3>Ближе к вашей идее</h3><p>Обсуждаете мебель с теми, кто её создаёт. Подбираем конструкцию, материалы и комплектацию под вашу задачу.</p></div></article>
+          <article class="benefit-card"><img src="assets/category-dressing.webp" alt="Детали наполнения гардеробной" loading="lazy"><div><p class="eyebrow">После установки</p><h3>Гарантия и поддержка</h3><p>Условия гарантии фиксируем в договоре. Если возникают вопросы по мебели, вы знаете, к кому обратиться.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="portfolio" class="section container">
+      <div class="section-heading">
+        <div><p class="eyebrow">Сделано в Ярге</p><h2>Наши работы</h2></div>
+        <p class="section-intro">Не только красивые идеи — мебель, которая уже стала частью чьего-то дома. Фотографии выполненных проектов.</p>
+      </div>
+      <div class="portfolio-grid" id="portfolio-grid"></div>
+      <div class="portfolio-bottom"><span>Свой проект начинается с вашей идеи.</span><button class="text-button" data-form="calculate">Обсудить похожее решение <span aria-hidden="true">↗</span></button></div>
+    </section>
+
+    <section class="production-section" id="production">
+      <div class="container">
+        <div class="section-heading">
+          <div><p class="eyebrow light">Собственное производство · Воронеж</p><h2>От материала<br>до вашей мебели</h2></div>
+          <p class="section-intro">За каждым проектом — работа мастеров и внимание к деталям. Сочетаем материалы, продумываем узлы и собираем мебель под конкретное пространство.</p>
+        </div>
+        <div class="production-layout">
+          <div class="factory-slideshow" aria-roledescription="карусель" aria-label="Кадры мастерской Ярги">
+            <img id="factory-image" src="assets/production-01.jpg" alt="Ручная обработка мебельной детали в мастерской Ярги" loading="lazy">
+            <span class="photo-note">Кадры мастерской из архива Ярги</span>
+            <div class="factory-navigation"><button class="round-button inverse" data-factory="-1" aria-label="Предыдущий кадр производства">←</button><span id="factory-counter">01 / 04</span><button class="round-button inverse" data-factory="1" aria-label="Следующий кадр производства">→</button></div>
+          </div>
+          <div class="production-story"><span class="big-number">ЯРГА</span><p class="eyebrow light">Мебель начинается с деталей</p><h3 id="factory-title">Работа рук,<br>внимание к материалу</h3><p id="factory-description">Обрабатываем детали и уделяем внимание тем местам, которые вы будете видеть и трогать каждый день.</p><a href="about.html" class="text-button light-link">О нашем подходе <span aria-hidden="true">↗</span></a></div>
+        </div>
+        <div class="production-benefits">
+          <article><span>01</span><h3>Индивидуальное изготовление</h3><p>Размеры, конфигурация и наполнение под ваш проект.</p></article>
+          <article><span>02</span><h3>Материал под задачу</h3><p>Шпон, окрашенные фасады и плитные материалы — в подходящей комплектации.</p></article>
+          <article><span>03</span><h3>Внимание к деталям</h3><p>Ручная обработка и работа с узлами, фактурой и отделкой.</p></article>
+          <article><span>04</span><h3>От проекта до монтажа</h3><p>Обсуждаем не только внешний вид, но и то, как мебель встанет у вас дома.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="reviews">
+      <div class="section-heading"><div><p class="eyebrow">Лучше всего о нас говорят дома</p><h2>Отзывы клиентов</h2></div><a class="text-button" href="https://yandex.ru/maps/org/yarga/24718152912/reviews/" target="_blank" rel="noopener noreferrer">Отзывы на Яндекс Картах <span aria-hidden="true">↗</span></a></div>
+      <div class="review-grid">
+        <article class="review-card"><div class="review-image"><img src="assets/review-kitchen.webp" alt="Иллюстрация светлой кухни" loading="lazy"><span>Иллюстрация интерьера</span></div><div class="review-content"><p class="stars" aria-label="Отзыв с оценкой 5 из 5">★★★★★</p><h3>Сначала кухня.<br>Потом — мебель в спальню.</h3><p>Наталья отмечает качество материалов, соблюдение сроков и добросовестный подход. После кухни она заказала мебель и для спальни.</p><div class="review-author"><span>Наталья</span><a href="https://yandex.ru/maps/org/yarga/24718152912/reviews/" target="_blank" rel="noopener noreferrer">Яндекс Карты ↗</a></div></div></article>
+        <article class="review-card"><div class="review-image"><img src="assets/review-storage.webp" alt="Иллюстрация шкафа в жилом интерьере" loading="lazy"><span>Иллюстрация интерьера</span></div><div class="review-content"><p class="stars" aria-label="Отзыв с оценкой 5 из 5">★★★★★</p><h3>Хранение продумано<br>для всей квартиры.</h3><p>Марина заказывала гардеробы, шкаф в детскую, тумбу в ванную и шкаф на лоджию. В отзыве благодарит за чёткую работу и результат в срок.</p><div class="review-author"><span>Марина</span><a href="https://yandex.ru/maps/org/yarga/24718152912/reviews/" target="_blank" rel="noopener noreferrer">Яндекс Карты ↗</a></div></div></article>
+        <article class="review-card"><div class="review-image"><img src="assets/review-home.webp" alt="Иллюстрация кухни и гостиной в едином стиле" loading="lazy"><span>Иллюстрация интерьера</span></div><div class="review-content"><p class="stars" aria-label="Отзыв с оценкой 5 из 5">★★★★★</p><h3>Свои эскизы.<br>Именно свой результат.</h3><p>Андрей заказывал кухню по собственным эскизам. Отмечает фурнитуру, разумную стоимость и личное участие Евгения в решении вопросов.</p><div class="review-author"><span>Андрей</span><a href="https://yandex.ru/maps/org/yarga/24718152912/reviews/" target="_blank" rel="noopener noreferrer">Яндекс Карты ↗</a></div></div></article>
+      </div>
+      <p class="section-note">Краткий пересказ опубликованных отзывов о Ярге. Иллюстрации не являются фотографиями заказов авторов.</p>
+    </section>
+
+    <section class="section soft-section faq-section" id="faq"><div class="container faq-layout"><div><p class="eyebrow">До того, как мы начнём</p><h2>Ответы<br> на ваши вопросы</h2><p>Не нашли свой вопрос?<br>Давайте обсудим его лично.</p><button class="text-button" data-form="consult">Задать вопрос <span aria-hidden="true">↗</span></button></div><div class="faq-list">
+      <details open><summary>Сколько стоит замер?</summary><div>Замер для индивидуального проекта — бесплатный. На встрече обсудим размеры, материалы и ваши пожелания. Возможность выезда и удобное время согласуем заранее.</div></details>
+      <details><summary>Можно ли рассчитать мебель по моему эскизу?</summary><div>Да. Пришлите план, размеры или фотографии понравившегося решения. Обсудим материалы и наполнение, а после замера уточним конструкцию и итоговую стоимость.</div></details>
+      <details><summary>Сколько времени занимает изготовление?</summary><div>Срок зависит от материалов и сложности. Ориентир — 45–60 календарных дней. Точные сроки согласуем для вашего проекта и зафиксируем в договоре.</div></details>
+      <details><summary>Есть ли гарантия на мебель?</summary><div>Да. Срок и условия зависят от материалов и комплектующих и указываются в договоре. Объясним, что входит в гарантию именно вашего проекта.</div></details>
+      <details><summary>Можно заказать только один предмет?</summary><div>Да. Изготавливаем не только кухни и комплекты для квартиры, но и отдельные шкафы, тумбы, столы и другие предметы корпусной мебели по индивидуальным размерам.</div></details>
+    </div></div></section>
+
+    <section class="section container contact-section" id="contact"><div class="contact-copy"><p class="eyebrow">Давайте начнём с вашей идеи</p><h2>Какая мебель<br>нужна вашему дому?</h2><p>Расскажите о задаче. Поможем разобраться в материалах, планировке и комплектации — и обсудим следующий шаг.</p><a class="contact-phone" href="tel:+79803400340">+7 (980) 340-0-340</a><p class="small-muted">Москва и Московская область<br>Производство — Воронеж</p><div class="contact-messengers"><a href="https://t.me/yarga_chief" target="_blank" rel="noopener noreferrer">Написать в Telegram ↗</a><a class="max-link" href="https://max.ru/u/f9LHodD0cOLbUmBjDs8A0MR_iyZcGbrA6vWLMLdq6W8uahVcjLbw-Eb_QpU" target="_blank" rel="noopener noreferrer">Написать в MAX ↗</a></div></div><form class="contact-form prototype-form" data-form-kind="consult"><h3>Обсудим ваш проект</h3><label>Ваше имя<input name="name" autocomplete="name" placeholder="Как к вам обращаться"></label><label>Телефон<input name="phone" type="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" required minlength="10"></label><label>Что хотите изготовить?<textarea name="comment" rows="2" placeholder="Например, кухня и шкаф в прихожую"></textarea></label><label class="consent"><input type="checkbox" required><span>Даю <a href="https://yarga.gallery/soglasie" target="_blank" rel="noopener noreferrer">согласие на обработку персональных данных</a>. <a href="https://yarga.gallery/privacypolicy" target="_blank" rel="noopener noreferrer">Политика</a></span></label><button class="button button-primary" type="submit">Обсудить проект <span aria-hidden="true">↗</span></button><p class="form-note">Демонстрационная форма прототипа. Данные не отправляются.</p></form></section>
+  </main>
+  <footer id="site-footer"></footer>
+  <div id="overlays"></div>
+</body>
+</html>
