@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200">
+<rect width="1600" height="1200" fill="#e9e9e9"/>
+<path d="M1 1H1599V1199H1Z M0 0L1600 1200 M1600 0L0 1200" fill="none" stroke="#d4d4d4" stroke-width="2"/>
+<rect x="440" y="520" width="720" height="100" fill="#e9e9e9"/>
+<text x="800" y="570" fill="#777" font-family="Arial,sans-serif" font-size="36" text-anchor="middle">Домашняя библиотека</text>
+<text x="800" y="606" fill="#999" font-family="Arial,sans-serif" font-size="21" text-anchor="middle">Плейсхолдер изображения</text>
+</svg>
