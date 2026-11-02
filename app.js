@@ -51,6 +51,7 @@ function createDialogs(){
 function showDialog(id){closeMenus();const dialog=document.getElementById(id);dialog.showModal();document.body.classList.add('locked');}
 const formCopy={measure:{title:'Начнём с замера',description:'Оставьте контакт — обсудим ваш проект и удобное время встречи. Замер бесплатный.',button:'Записаться на замер'},calculate:{title:'Рассчитаем вашу мебель',description:'Расскажите, что хотите изготовить. Размеры и пожелания помогут обсудить предварительный бюджет.',button:'Получить расчёт'},consult:{title:'Обсудим вашу идею',description:'Задайте вопрос о материалах, проекте или комплектации. Выберите удобный способ связи.',button:'Обсудить проект'},business:{title:'Обсудим ваш объект',description:'Расскажите о помещении, количестве изделий и сроках. Обсудим техническое задание и состав предложения.',button:'Обсудить объект'},designer:{title:'Давайте работать вместе',description:'Расскажите о проекте. Обсудим материалы, конструкцию и формат взаимодействия.',button:'Обсудить сотрудничество'}};
 function openForm(kind='consult'){
+  if(kind==='calculate'&&window.YargaQuiz){window.YargaQuiz.open();return;}
   const copy=formCopy[kind]||formCopy.consult;
   const currentCategory=new URLSearchParams(location.search).get('category');
   const detail=kind==='calculate'?`<label>Тип мебели<select name="category">${categories.map(c=>`<option${c.id===currentCategory?' selected':''}>${c.name}</option>`).join('')}<option>Комплект для квартиры</option><option>Другое</option></select></label><label>Примерные размеры<input name="dimensions" placeholder="Например, кухня 3 × 2 м"></label>`:kind==='measure'?'<label>Район или населённый пункт<input name="location" placeholder="Москва или Московская область"></label>':'';
@@ -91,7 +92,7 @@ function wireActions(){
     const save=e.target.closest('[data-save]');if(save){saveFavorite(save.dataset.save);return;}
     const remove=e.target.closest('[data-remove-favorite]');if(remove){saveFavorite(remove.dataset.removeFavorite);return;}
     if(e.target.closest('[data-favorites]')){renderFavorites();showDialog('favorites-dialog');return;}
-    const filter=e.target.closest('[data-filter]');if(filter){document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b===filter));renderCatalog(filter.dataset.filter);history.replaceState({},'',`catalog.html${filter.dataset.filter==='all'?'':`?category=${filter.dataset.filter}`}`);}
+    const filter=e.target.closest('[data-filter]');if(filter){document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b===filter));renderCatalog(filter.dataset.filter);window.YargaQuiz?.updateEntry(filter.dataset.filter);history.replaceState({},'',`catalog.html${filter.dataset.filter==='all'?'':`?category=${filter.dataset.filter}`}`);}
   });
   document.addEventListener('submit',e=>{const form=e.target.closest('.prototype-form');if(!form)return;e.preventDefault();showDemoSuccess(form.dataset.formKind==='newsletter');});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenus();if(document.getElementById('gallery-dialog').open&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){e.preventDefault();updateGallery(galleryIndex+(e.key==='ArrowRight'?1:-1));}});
