@@ -1,4 +1,3 @@
-/* Browser-only prototype: answers and contacts are never transmitted or persisted. */
 (() => {
   const kinds = [
     ['kitchens','Кухни','category-kitchens'],['wardrobes','Шкафы','category-wardrobes'],
@@ -24,7 +23,7 @@
   let state, dialog, previousFocus;
   const isWireframe = () => !!document.querySelector('link[href*="wireframe.css"]');
   const category = () => kinds.find(k=>k[0]===state.category);
-  const steps = () => [...(state.chooseType?[{id:'category',type:'category',title:'Какую мебель вы хотите рассчитать?'}]:[]),...routes[state.category||'kitchens'],{id:'contact',type:'contact',title:'Всё готово для обсуждения проекта'}];
+  const steps = () => [...(state.chooseType?[{id:'category',type:'category',title:state.purpose==='design'?'Для какой мебели нужен дизайн-проект?':'Какую мебель вы хотите рассчитать?'}]:[]),...routes[state.category||'kitchens'],{id:'contact',type:'contact',title:state.purpose==='design'?'Отправьте детали для дизайн-проекта':'Отправьте детали для расчёта'}];
   function ensureDialog(){
     if(dialog)return;
     dialog=document.createElement('dialog');dialog.className='quiz-dialog';dialog.id='quiz-dialog';dialog.setAttribute('aria-labelledby','quiz-title');
@@ -48,19 +47,9 @@
       const next=dialog.querySelector('[data-quiz-next]');if(next)next.disabled=!validStep();
       if(input.name==='unknownSize')dialog.querySelectorAll('[data-size]').forEach(x=>x.disabled=input.checked);
     });
-    dialog.addEventListener('input',event=>{if(event.target.name==='phone')event.target.setCustomValidity('');saveInputs();const next=dialog.querySelector('[data-quiz-next]');if(next)next.disabled=!validStep();});
-    dialog.addEventListener('submit',event=>{
-      event.preventDefault();saveInputs();
-      const phone=state.contact.phone.replace(/\D/g,'');
-      const phoneInput=dialog.querySelector('[name=phone]');
-      phoneInput.setCustomValidity(phone.length>=10&&phone.length<=15?'':'Укажите телефон: от 10 до 15 цифр.');
-      if(!event.target.reportValidity())return;
-      state.contact={};
-      dialog.querySelector('.quiz-body').innerHTML=`<div class="quiz-success"><span class="success-mark" aria-hidden="true">✓</span><h2 id="quiz-title" tabindex="-1">Сценарий расчёта готов</h2><p>В готовом сайте ваши ответы и контакт поступят в Яргу для подготовки расчёта.</p><p class="form-note">Это демонстрация прототипа. Заявка не отправлена, контактные данные не сохраняются.</p><button type="button" class="button button-primary" data-quiz-close>Готово</button></div>`;
-      dialog.querySelector('#quiz-title').focus();
-    });
+    dialog.addEventListener('input',event=>{saveInputs();const next=dialog.querySelector('[data-quiz-next]');if(next)next.disabled=!validStep();});
   }
-  function open(kind, modelId){
+  function open(kind, modelId, purpose){
     ensureDialog();previousFocus=document.activeElement;
     const current=kind||(!document.body.classList.contains('home')?new URLSearchParams(location.search).get('category'):null);
     const known=kinds.some(k=>k[0]===current);
@@ -70,7 +59,7 @@
       if (routes.kitchens[0].options.includes(model.style)) answers.style = model.style;
       if (routes.kitchens[1].options.includes(model.type)) answers.layout = model.type;
     }
-    state={category:known?current:null,chooseType:!known,index:0,answers,contact:{},model};
+    state={category:known?current:null,chooseType:!known,index:0,answers,model,purpose};
     render();closeMenus();dialog.showModal();document.body.classList.add('locked');dialog.querySelector('#quiz-title').focus();
   }
   function dimensionFields(){
@@ -88,7 +77,6 @@
       dialog.querySelectorAll('[data-size]').forEach(x=>values[x.dataset.size]=x.value);state.answers.size=values;
     }
     if(step.type==='text')state.answers.description=dialog.querySelector('[name=description]')?.value||'';
-    if(step.type==='contact')dialog.querySelectorAll('[data-contact]').forEach(x=>{state.contact[x.name]=x.type==='checkbox'?x.checked:x.value;});
   }
   function validStep(){
     const step=steps()[state.index], answer=state.answers[step.id];
@@ -102,19 +90,34 @@
     return Array.isArray(answer)?answer.length>0:!!answer;
   }
   function advance(){saveInputs();if(!validStep())return;state.index=state.editing?steps().length-1:state.index+1;state.editing=false;render();}
+  function answerText(step){
+    const answer = state.answers[step.id];
+    if(step.type==='size'){
+      if(answer?.unknown)return 'Уточним на замере';
+      return [['width','Ширина / длина'],['side','Вторая сторона / остров'],['height','Высота'],['depth','Глубина']].filter(([key])=>answer?.[key]).map(([key,label])=>`${label}: ${answer[key]} см`).join(', ');
+    }
+    return Array.isArray(answer) ? answer.join(', ') : answer;
+  }
   function summary(){
-    const sizeText=a=>a?.unknown?'Уточним на замере':[['width','Ширина / длина'],['side','Вторая сторона / остров'],['height','Высота'],['depth','Глубина']].filter(([key])=>a?.[key]).map(([key,label])=>`${label}: ${a[key]} см`).join(', ');
     const model = state.model;
     const modelRow = model ? `<div><dt>Модель</dt><dd>${esc(model.code ? model.code + ' · ' + model.name : model.name)}</dd></div>` : '';
     return `<div class="quiz-summary"><h3>Ваш проект: ${esc(category()[1].toLowerCase())}</h3><dl>${modelRow}${steps().map((step,i)=>{
       if(['category','contact'].includes(step.id))return '';
-      const answer=state.answers[step.id];const text=step.type==='size'?sizeText(answer):Array.isArray(answer)?answer.join(', '):answer;
-      return `<div><dt>${esc(step.title)}</dt><dd>${esc(text)} <button type="button" data-quiz-edit="${i}" aria-label="Изменить: ${esc(step.title)}">Изменить</button></dd></div>`;
+      return `<div><dt>${esc(step.title)}</dt><dd>${esc(answerText(step))} <button type="button" data-quiz-edit="${i}" aria-label="Изменить: ${esc(step.title)}">Изменить</button></dd></div>`;
     }).join('')}</dl></div>`;
   }
-  function contactForm(){
-    const c=state.contact;
-    return `<div class="quiz-contact-layout">${summary()}<form class="quiz-contact"><h3>Куда отправить расчёт?</h3><p>Обсудим комплектацию и подготовим предложение по вашему проекту. Итоговая цена зависит от размеров и материалов.</p><label>Ваше имя<input data-contact name="name" autocomplete="name" value="${esc(c.name)}" placeholder="Как к вам обращаться" maxlength="100"></label><label>Телефон<input data-contact name="phone" type="tel" autocomplete="tel" value="${esc(c.phone)}" placeholder="+7 (___) ___-__-__" required minlength="10" maxlength="25"></label><label>Удобный способ связи<select data-contact name="channel">${['Позвонить','Написать в Telegram','Написать в MAX'].map(x=>`<option ${c.channel===x?'selected':''}>${x}</option>`).join('')}</select></label><label>Комментарий<textarea data-contact name="comment" rows="2" maxlength="1500" placeholder="Пожелания, район, удобное время">${esc(c.comment)}</textarea></label><label class="consent"><input data-contact name="consent" type="checkbox" required ${c.consent?'checked':''}><span>Даю <a href="https://yarga.gallery/soglasie" target="_blank" rel="noopener noreferrer">согласие на обработку персональных данных</a>. <a href="https://yarga.gallery/privacypolicy" target="_blank" rel="noopener noreferrer">Политика</a></span></label><button class="button button-primary" type="submit">Получить расчёт <span aria-hidden="true">↗</span></button><p class="form-note">Демонстрационная форма. Ответы и контакты не отправляются.</p></form></div>`;
+  function contactStep(){
+    const request = state.purpose==='design' ? 'Хотелось бы заказать бесплатный дизайн-проект.' : 'Хотелось бы получить расчёт мебели.';
+    const model = state.model;
+    const lines = ['Здравствуйте! ' + request, 'Направление: ' + category()[1]];
+    if(model)lines.push('Модель: ' + [model.code, model.name].filter(Boolean).join(' · '));
+    for(const step of routes[state.category]){
+      if(step.type==='text')continue;
+      const answer=answerText(step);
+      if(answer)lines.push(`${step.title} ${answer}`);
+    }
+    const contact=window.YargaContact;
+    return `<div class="quiz-contact-layout">${summary()}<div class="quiz-contact"><h3>Напишите Ярге</h3><p>В Telegram откроется черновик с выбранными вариантами. Проверьте его и отправьте в чат.${state.category==='other'?' Описание изделия можно добавить в сообщении.':''}</p><div class="contact-actions"><a class="button button-primary" href="${esc(contact.telegramDraft(lines.join('\n')))}" target="_blank" rel="noopener noreferrer">Продолжить в Telegram <span aria-hidden="true">↗</span></a><a class="text-button" href="${esc(contact.maxUrl)}" target="_blank" rel="noopener noreferrer">Написать в MAX</a><a class="text-button" href="tel:+79803400340">Позвонить</a></div></div></div>`;
   }
   function render(){
     const list=steps(), step=list[state.index], selected=state.answers[step.id];
@@ -122,12 +125,12 @@
     if(step.type==='category')body=`<div class="quiz-categories">${kinds.map(([id,name,image])=>`<label class="quiz-category"><input type="radio" name="category" value="${id}" ${state.category===id?'checked':''}>${image?`<img src="assets/${image}.${isWireframe()?'svg':'webp'}" alt="" width="480" height="300">`:'<span class="quiz-other" aria-hidden="true">＋</span>'}<span class="quiz-option-label">${name}<i aria-hidden="true"></i></span></label>`).join('')}</div>`;
     else if(step.type==='size')body=dimensionFields();
     else if(step.type==='text')body=`<label class="quiz-description-label">Предмет и пожелания<textarea name="description" rows="4" maxlength="1500" placeholder="Что изготовить и где будет стоять">${esc(selected)}</textarea></label>`;
-    else if(step.type==='contact')body=contactForm();
+    else if(step.type==='contact')body=contactStep();
     else body=`<fieldset class="quiz-options"><legend class="sr-only">${esc(step.title)}</legend>${step.options.map(option=>`<label class="quiz-option"><input type="${step.type==='multi'?'checkbox':'radio'}" name="answer" value="${esc(option)}" ${Array.isArray(selected)?selected.includes(option)?'checked':'':selected===option?'checked':''}><span>${option}</span><i aria-hidden="true"></i></label>`).join('')}</fieldset>`;
     const progress=Math.round(state.index/(list.length-1)*100);
     const backMarkup=state.index?`<button class="text-button" type="button" data-quiz-back>${state.editing?'← К сводке':'← Назад'}</button>`:'<span class="quiz-time">Около 2 минут</span>';
     const nextMarkup=step.type!=='contact'?`<button class="button button-primary" type="button" data-quiz-next>${state.editing?'Сохранить':'Далее'} <span aria-hidden="true">→</span></button>`:'';
-    dialog.innerHTML=`<button class="dialog-close" type="button" data-quiz-close aria-label="Закрыть квиз">×</button><div class="quiz-sidebar"><a class="wordmark" href="index.html">ЯРГА<small>Мебель на заказ</small></a><p class="eyebrow">Ваш проект начинается здесь</p><h2>Мебель,<br>которая подходит<br>именно вам.</h2><p>Несколько вопросов о вашем пространстве и пожеланиях — для предметного разговора о стоимости.</p><div class="quiz-sidebar-note">По вашим размерам<br>Напрямую от производителя<br>Москва и Московская область</div></div><div class="quiz-body"><div class="quiz-progress-info"><span>${category()?esc(category()[1]):'Расчёт мебели'}</span><span>Шаг ${state.index+1} из ${list.length}</span></div><div class="quiz-progress" role="progressbar" aria-label="Прогресс квиза" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div><h2 id="quiz-title" tabindex="-1">${step.title}</h2><p class="quiz-hint">${step.hint||(step.type==='category'?'Выберите направление — дальше будут вопросы именно о вашей мебели.':step.type==='contact'?'Проверьте ответы. Любой пункт можно изменить.':'Выберите один вариант.')}</p>${body}<div class="quiz-navigation">${backMarkup}${nextMarkup}</div></div>`;
+    dialog.innerHTML=`<button class="dialog-close" type="button" data-quiz-close aria-label="Закрыть квиз">×</button><div class="quiz-sidebar"><a class="wordmark" href="index.html">ЯРГА<small>Мебель на заказ</small></a><p class="eyebrow">Ваш проект начинается здесь</p><h2>Мебель,<br>которая подходит<br>именно вам.</h2><p>Несколько вопросов о вашем пространстве и пожеланиях — для предметного разговора о стоимости.</p><div class="quiz-sidebar-note">По вашим размерам<br>Напрямую от производителя<br>Москва и Московская область</div></div><div class="quiz-body"><div class="quiz-progress-info"><span>${category()?esc(category()[1]):state.purpose==='design'?'Дизайн-проект':'Расчёт мебели'}</span><span>Шаг ${state.index+1} из ${list.length}</span></div><div class="quiz-progress" role="progressbar" aria-label="Прогресс квиза" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div><h2 id="quiz-title" tabindex="-1">${step.title}</h2><p class="quiz-hint">${step.hint||(step.type==='category'?'Выберите направление — дальше будут вопросы именно о вашей мебели.':step.type==='contact'?'Проверьте ответы. Любой пункт можно изменить.':'Выберите один вариант.')}</p>${body}<div class="quiz-navigation">${backMarkup}${nextMarkup}</div></div>`;
     const next=dialog.querySelector('[data-quiz-next]');if(next)next.disabled=!validStep();
     dialog.scrollTop=0;dialog.querySelector('.quiz-body').scrollTop=0;
     if(dialog.open)dialog.querySelector('#quiz-title').focus();

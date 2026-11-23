@@ -1,0 +1,61 @@
+.installations { background: var(--soft); overflow: hidden; }
+.installations-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+.installations-head h2 { margin: 0; }
+.installations-head p { color: var(--muted); font-size: 14px; margin: 12px 0 0; }
+.installations-controls { display: flex; flex-shrink: 0; gap: 8px; }
+.installations-controls button[hidden] { display: none; }
+.installations-track {
+  --installation-gutter: max(22px, calc((100vw - min(1400px, 92vw)) / 2));
+  display: flex;
+  position: relative;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-padding-inline: var(--installation-gutter);
+  scroll-snap-type: x mandatory;
+  padding: 0 var(--installation-gutter) 12px;
+  scrollbar-color: var(--line) transparent;
+  scrollbar-width: thin;
+}
+.installation-frame { flex: 0 0 auto; width: clamp(250px, 29vw, 435px); margin: 0; scroll-snap-align: start; }
+.installation-frame.installation-portrait { width: clamp(164px, 17vw, 252px); }
+.installation-frame button { display: block; width: 100%; height: clamp(205px, 23vw, 340px); background: var(--line); overflow: hidden; padding: 0; border: 0; }
+.installation-frame button img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .35s ease; }
+.installation-frame button:hover img { transform: scale(1.035); }
+.installation-frame figcaption { color: var(--ink); font-size: 12px; line-height: 1.45; margin-top: 10px; }
+.installations-footer { margin-top: 18px; }
+
+.design-offer { border: 0; width: min(880px, calc(100vw - 38px)); max-height: calc(100svh - 38px); padding: 0; color: var(--ink); background: var(--soft); }
+.design-offer[open] { display: grid; grid-template-columns: .95fr 1fr; animation: design-offer-in .24s ease-out; }
+.design-offer::backdrop { background: rgba(22, 17, 15, .62); }
+.design-offer .dialog-close { z-index: 1; background: #fff; color: var(--ink); border-radius: 50%; width: 37px; height: 37px; padding: 0; }
+.design-offer-image { min-height: 420px; border-right: 5px solid var(--red); }
+.design-offer-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.design-offer-copy { padding: 44px 36px 30px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+.design-offer-brand { font-size: 13px; letter-spacing: .13em; font-weight: 700; color: var(--red); margin-bottom: 16px; }
+.design-offer-copy h2 { font-size: clamp(28px, 3.5vw, 43px); line-height: 1.08; margin: 0; }
+.design-offer-copy h2:focus { outline: none; }
+.design-offer-copy p { color: var(--muted); font-size: 14px; line-height: 1.65; margin: 16px 0 22px; }
+.design-offer-copy .button { height: auto; min-height: 46px; }
+.design-offer-dismiss { background: none; padding: 7px 0; margin-top: 10px; border: none; color: var(--muted); text-decoration: underline; }
+.contact-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.contact-actions .button { max-width: 100%; height: auto; }
+.contact-actions .text-button { padding: 8px 0; }
+.quiz-contact .contact-actions { margin-top: 15px; }
+
+@keyframes design-offer-in { from { opacity: 0; transform: translateY(13px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 650px) {
+  .installations-head { align-items: flex-start; flex-wrap: wrap; margin-bottom: 20px; }
+  .installations-head p { font-size: 13px; }
+  .installations-track { gap: 10px; }
+  .design-offer { width: calc(100vw - 24px); max-height: calc(100svh - 24px); }
+  .design-offer[open] { display: block; }
+  .design-offer-image { height: clamp(105px, 24svh, 185px); min-height: 0; border-right: 0; border-bottom: 4px solid var(--red); }
+  .design-offer-copy { padding: 20px 20px 15px; }
+  .design-offer-brand { margin-bottom: 9px; }
+  .design-offer-copy h2 { font-size: clamp(24px, 6.5vw, 34px); }
+  .design-offer-copy p { margin: 12px 0 16px; font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .design-offer[open] { animation: none; }
+  .installation-frame button img { transition: none; }
+}
