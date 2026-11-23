@@ -4,6 +4,8 @@
   const wire=()=>!!document.querySelector('link[href*="wireframe.css"]');
   const image=name=>`assets/${wire()?name.replace(/\.(webp|jpg)$/i,'.svg'):name}`;
   let selected='all',filters={style:'',tone:'',type:''},sort='default',detail,previousFocus;
+  const pageSize = 12;
+  let visibleCount = pageSize;
   const current=()=>solutions.filter(s=>s.category===selected);
   const nav=()=>`<nav class="direction-nav container" aria-label="Разделы каталога"><a href="catalog.html" ${selected==='all'?'aria-current="page"':''}>Все решения</a>${Object.entries(sections).map(([id,s])=>`<a href="catalog.html?category=${id}" ${selected===id?'aria-current="page"':''}>${s.name}</a>`).join('')}</nav>`;
   const quiz=(label='Рассчитать стоимость',className='button button-primary')=>`<button class="${className}" data-quiz="${selected==='all'?'':selected}">${label} <span aria-hidden="true">↗</span></button>`;
@@ -20,10 +22,10 @@
     const search=new URLSearchParams(location.search);
     for(const [field] of fields){const options=[...new Set(items.map(s=>s[field]))];filters[field]=options.includes(search.get(field))?search.get(field):'';}
     sort=search.get('sort')==='name'?'name':'default';
-    return `<section class="container solutions-section" aria-labelledby="solutions-heading"><div class="catalog-tags" aria-label="Популярные подборки">${section.tags.map(tag=>{const field=items.some(s=>s.type===tag)?'type':'tone';return `<button type="button" data-catalog-tag="${esc(tag)}" data-field="${field}" aria-pressed="false">${tag}</button>`;}).join('')}</div><div class="catalog-toolbar"><button class="catalog-filter-toggle" aria-expanded="false" aria-controls="catalog-facets">Фильтры <span aria-hidden="true">☷</span></button><div class="catalog-facets" id="catalog-facets">${fields.map(([field,label])=>`<label>${label}<select data-catalog-facet="${field}" aria-label="${label}"><option value="">Все варианты</option>${[...new Set(items.map(s=>s[field]))].map(value=>`<option value="${esc(value)}" ${filters[field]===value?'selected':''}>${value}</option>`).join('')}</select></label>`).join('')}<button class="catalog-reset" data-catalog-reset type="button">Сбросить</button></div><label class="catalog-sort"><span class="sr-only">Порядок решений</span><select data-catalog-sort aria-label="Порядок решений"><option value="default">По подборке</option><option value="name" ${sort==='name'?'selected':''}>По названию</option></select></label></div><div class="catalog-results-heading"><h2 id="solutions-heading">${selected==='kitchens'?'Модели кухонь':'Модели мебели'}</h2><p id="catalog-result-count" aria-live="polite"></p></div><div class="solutions-grid" id="solutions-grid"></div><p class="catalog-image-note">${wire()?'Все изображения обозначены плейсхолдерами. Карточки показывают структуру будущего каталога. Стоимость рассчитываем индивидуально.':'Визуализации показывают варианты фасадов, материалов и планировок. Фотографии выполненных заказов собраны в <a href="index.html#portfolio">портфолио</a>. Стоимость рассчитываем индивидуально.'}</p></section>`;
+    return `<section class="container solutions-section" aria-labelledby="solutions-heading"><div class="catalog-tags" aria-label="Популярные подборки">${section.tags.map(tag=>{const field=items.some(s=>s.type===tag)?'type':'tone';return `<button type="button" data-catalog-tag="${esc(tag)}" data-field="${field}" aria-pressed="false">${tag}</button>`;}).join('')}</div><div class="catalog-toolbar"><button class="catalog-filter-toggle" aria-expanded="false" aria-controls="catalog-facets">Фильтры <span aria-hidden="true">☷</span></button><div class="catalog-facets" id="catalog-facets">${fields.map(([field,label])=>`<label>${label}<select data-catalog-facet="${field}" aria-label="${label}"><option value="">Все варианты</option>${[...new Set(items.map(s=>s[field]))].map(value=>`<option value="${esc(value)}" ${filters[field]===value?'selected':''}>${value}</option>`).join('')}</select></label>`).join('')}<button class="catalog-reset" data-catalog-reset type="button">Сбросить</button></div><label class="catalog-sort"><span class="sr-only">Порядок решений</span><select data-catalog-sort aria-label="Порядок решений"><option value="default">По подборке</option><option value="name" ${sort==='name'?'selected':''}>По названию</option></select></label></div><div class="catalog-results-heading"><h2 id="solutions-heading">${selected==='kitchens'?'Модели кухонь':'Модели мебели'}</h2><p id="catalog-result-count" aria-live="polite"></p></div><div class="solutions-grid" id="solutions-grid"></div><div class="catalog-more"><button class="button button-outline" type="button" data-catalog-more aria-controls="solutions-grid" hidden>Показать ещё</button></div><p class="catalog-image-note">${wire()?'Все изображения обозначены плейсхолдерами. Карточки показывают структуру будущего каталога. Стоимость рассчитываем индивидуально.':'Визуализации показывают варианты фасадов, материалов и планировок. Фотографии выполненных заказов собраны в <a href="index.html#portfolio">портфолио</a>. Стоимость рассчитываем индивидуально.'}</p></section>`;
   }
   function card(s){
-    return `<article class="solution-card"><button class="solution-picture" data-solution="${s.id}" aria-label="Подробнее: ${esc(s.name)}"><img src="${image(s.image)}" alt="${esc(s.name)}${s.real?' — работа Ярги':' — интерьерный пример'}" loading="lazy" width="1448" height="1086"><span class="solution-label">${wire()?'Плейсхолдер':s.real?'Работа Ярги':'Визуализация'}</span><span class="solution-expand" aria-hidden="true">↗</span></button><div class="solution-meta"><span>${s.code?esc(s.code)+" · ":""}${s.style}</span><span>${s.type}</span></div><h3><button data-solution="${s.id}">${s.name}</button></h3><p class="solution-description">${s.description}</p><div class="solution-bottom"><span>По вашим размерам</span><button class="text-button" data-quiz="${s.category}" aria-label="Рассчитать: ${esc(s.name)}">Рассчитать проект <span aria-hidden="true">↗</span></button></div></article>`;
+    return `<article class="solution-card"><button class="solution-picture" data-solution="${s.id}" aria-label="Подробнее: ${esc(s.name)}"><img src="${image(s.image)}" alt="${esc(s.name)}${s.real?' — работа Ярги':' — интерьерный пример'}" loading="lazy" width="1448" height="1086"><span class="solution-label">${wire()?'Плейсхолдер':s.real?'Работа Ярги':'Визуализация'}</span><span class="solution-expand" aria-hidden="true">↗</span></button><div class="solution-meta"><span>${s.code?esc(s.code)+" · ":""}${s.style}</span><span>${s.type}</span></div><h3><button data-solution="${s.id}">${s.name}</button></h3><p class="solution-description">${s.description}</p><div class="solution-bottom"><span>По вашим размерам</span><button class="text-button" data-quiz="${s.category}" data-quiz-model="${esc(s.id)}" aria-label="Рассчитать: ${esc(s.name)}">Рассчитать проект <span aria-hidden="true">↗</span></button></div></article>`;
   }
   function quizBanner(){
     const s=sections[selected];
@@ -47,12 +49,26 @@
     const reviews=document.getElementById('catalog-reviews-template')?.innerHTML||'';
     return `${hero()}${nav()}${selected==='all'?overview():filtersMarkup()}${quizBanner()}${approach()}${reviews}${faq()}${help()}`;
   }
-  function refresh(){
+  function refresh({ append = false } = {}){
     const grid=document.getElementById('solutions-grid');if(!grid)return;
     const items=current().filter(s=>Object.entries(filters).every(([key,value])=>!value||s[key]===value));
     if(sort==='name')items.sort((a,b)=>a.name.localeCompare(b.name,'ru'));
-    grid.innerHTML=items.length?items.map(card).join(''):`<div class="catalog-empty"><h3>Попробуем другое сочетание?</h3><p>В этой подборке пока нет примеров с такими параметрами. Изготовление по вашему проекту можно обсудить отдельно.</p><button class="button button-outline" data-catalog-reset>Сбросить фильтры</button></div>`;
-    document.getElementById('catalog-result-count').textContent=`Найдено: ${items.length}`;
+    if (!append) visibleCount = pageSize;
+    const before = append ? grid.children.length : 0;
+    const result = items.slice(before, visibleCount);
+    if (append) {
+      grid.insertAdjacentHTML('beforeend', result.map(card).join(''));
+      grid.children[before]?.querySelector('.solution-picture')?.focus();
+    } else {
+      grid.innerHTML = result.length ? result.map(card).join('') : `<div class="catalog-empty"><h3>Попробуем другое сочетание?</h3><p>В этой подборке пока нет примеров с такими параметрами. Изготовление по вашему проекту можно обсудить отдельно.</p><button class="button button-outline" data-catalog-reset>Сбросить фильтры</button></div>`;
+    }
+    const shown = Math.min(visibleCount, items.length);
+    document.getElementById('catalog-result-count').textContent = shown < items.length
+      ? `Показано ${shown} из ${items.length}`
+      : `Найдено: ${items.length}`;
+    const more = document.querySelector('[data-catalog-more]');
+    more.hidden = shown >= items.length;
+    if (!more.hidden) more.textContent = `Показать ещё ${Math.min(pageSize, items.length - shown)}`;
     document.querySelectorAll('[data-catalog-tag]').forEach(button=>button.setAttribute('aria-pressed',String(filters[button.dataset.field]===button.dataset.catalogTag)));
     document.querySelectorAll('[data-catalog-facet]').forEach(select=>select.value=filters[select.dataset.catalogFacet]);
     const active=Object.values(filters).some(Boolean);document.querySelectorAll('.catalog-reset').forEach(button=>button.hidden=!active);
@@ -66,7 +82,7 @@
       detail=document.createElement('dialog');detail.id='solution-dialog';detail.className='solution-dialog';detail.setAttribute('aria-labelledby','solution-title');document.getElementById('overlays').append(detail);
       detail.addEventListener('close',()=>{if(!document.querySelector('dialog[open]')){document.body.classList.remove('locked');previousFocus?.focus();}});
     }
-    detail.innerHTML=`<button type="button" class="dialog-close" data-solution-close aria-label="Закрыть решение">×</button><div class="solution-dialog-image"><img src="${image(s.image)}" alt="${esc(s.name)}"><span>${wire()?'Плейсхолдер изображения':s.real?'Фотография работы Ярги':'Интерьерный пример'}</span></div><div class="solution-dialog-copy"><p class="eyebrow">${sections[s.category].name} · ${s.code?esc(s.code):"По вашим размерам"}</p><h2 id="solution-title">${s.name}</h2><p>${s.description}</p><dl><div><dt>Стиль</dt><dd>${s.style}</dd></div><div><dt>Цветовая гамма</dt><dd>${s.tone}</dd></div><div><dt>${sections[s.category].typeLabel}</dt><dd>${s.type}</dd></div></dl><p class="solution-dialog-note">${s.real?'Можно обсудить похожий проект для вашего пространства.':'Это идея для индивидуального проекта. Размеры, материалы и комплектацию подберём под вашу задачу.'} Стоимость определим после уточнения деталей.</p><button class="button button-primary" data-solution-quote="${s.category}">Рассчитать похожий проект <span aria-hidden="true">↗</span></button></div>`;
+    detail.innerHTML=`<button type="button" class="dialog-close" data-solution-close aria-label="Закрыть решение">×</button><div class="solution-dialog-image"><img src="${image(s.image)}" alt="${esc(s.name)}"><span>${wire()?'Плейсхолдер изображения':s.real?'Фотография работы Ярги':'Интерьерный пример'}</span></div><div class="solution-dialog-copy"><p class="eyebrow">${sections[s.category].name} · ${s.code?esc(s.code):"По вашим размерам"}</p><h2 id="solution-title">${s.name}</h2><p>${s.description}</p><dl><div><dt>Стиль</dt><dd>${s.style}</dd></div><div><dt>Цветовая гамма</dt><dd>${s.tone}</dd></div><div><dt>${sections[s.category].typeLabel}</dt><dd>${s.type}</dd></div></dl><p class="solution-dialog-note">${s.real?'Можно обсудить похожий проект для вашего пространства.':'Это идея для индивидуального проекта. Размеры, материалы и комплектацию подберём под вашу задачу.'} Стоимость определим после уточнения деталей.</p><button class="button button-primary" data-solution-quote="${s.category}" data-quiz-model="${esc(s.id)}">Рассчитать похожий проект <span aria-hidden="true">↗</span></button></div>`;
     closeMenus();detail.showModal();document.body.classList.add('locked');
   }
   function init(){
@@ -77,12 +93,17 @@
       if(event.target.matches('[data-catalog-sort]')){sort=event.target.value;refresh();}
     });
     document.addEventListener('click',event=>{
+      if (event.target.closest('[data-catalog-more]')) {
+        visibleCount += pageSize;
+        refresh({ append: true });
+        return;
+      }
       const tag=event.target.closest('[data-catalog-tag]');if(tag){const field=tag.dataset.field;filters[field]=filters[field]===tag.dataset.catalogTag?'':tag.dataset.catalogTag;refresh();}
       if(event.target.closest('[data-catalog-reset]')){filters={style:'',tone:'',type:''};refresh();}
       const toggle=event.target.closest('.catalog-filter-toggle');if(toggle){const open=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(open));document.querySelector('.catalog-toolbar').classList.toggle('filters-open',open);}
       const card=event.target.closest('[data-solution]');if(card)openSolution(card.dataset.solution);
       if(event.target.closest('[data-solution-close]'))detail.close();
-      const quote=event.target.closest('[data-solution-quote]');if(quote){detail.close();window.YargaQuiz.open(quote.dataset.solutionQuote);}
+      const quote=event.target.closest('[data-solution-quote]');if(quote){detail.close();window.YargaQuiz.open(quote.dataset.solutionQuote, quote.dataset.quizModel);}
     });
   }
   window.YargaCatalog={render};document.addEventListener('DOMContentLoaded',init);

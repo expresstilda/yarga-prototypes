@@ -12,7 +12,7 @@
   const size = {id:'size',type:'size',title:'Какие размеры уже известны?',hint:'Укажите примерные габариты в сантиметрах. Точные размеры проверим на замере.'};
   const storage = choice('storage','Что важно разместить?',['Одежду на плечиках','Полки для вещей','Выдвижные ящики','Обувь и аксессуары','Хозяйственные вещи','Нужна помощь с наполнением'],'Можно выбрать несколько вариантов.',true);
   const routes = {
-    kitchens:[choice('style','Какой стиль кухни вам ближе?',['Современный','Неоклассика','Минимализм','Пока выбираю']),choice('layout','Какую планировку рассматриваете?',['Прямая','Угловая','П-образная','С островом','Нужна помощь с планировкой']),size,choice('material','Какие фасады рассматриваете?',['Окрашенные фасады','С древесной фактурой','Шпон','Комбинированные','Нужна помощь с материалами']),choice('equipment','Что учесть в проекте кухни?',['Встроенную технику','Шкафы до потолка','Больше выдвижных ящиков','Витрины и подсветку','Пока не знаю'],'Можно выбрать несколько вариантов. Технику и её стоимость согласуем отдельно.',true),timing],
+    kitchens:[choice('style','Какой стиль кухни вам ближе?',['Современный','Неоклассика','Минимализм','Пока выбираю']),choice('layout','Какую планировку рассматриваете?',['Прямая','Угловая','П-образная','С островом','С полуостровом','Параллельная','Нужна помощь с планировкой']),size,choice('material','Какие фасады рассматриваете?',['Окрашенные фасады','С древесной фактурой','Шпон','Комбинированные','Нужна помощь с материалами']),choice('equipment','Что учесть в проекте кухни?',['Встроенную технику','Шкафы до потолка','Больше выдвижных ящиков','Витрины и подсветку','Пока не знаю'],'Можно выбрать несколько вариантов. Технику и её стоимость согласуем отдельно.',true),timing],
     wardrobes:[choice('construction','Какой шкаф вам нужен?',['Встроенный в нишу','Отдельно стоящий','Во всю стену','Пока не определились']),choice('doors','Какие двери вам удобнее?',['Распашные','Раздвижные','Комбинированные','Нужна помощь с выбором']),size,storage,finish,timing],
     dressing:[choice('layout','Как расположить гардеробную?',['Вдоль одной стены','Углом','По трём стенам','В отдельной комнате','Нужна помощь с планировкой']),choice('system','Какое хранение вам ближе?',['Открытое','За фасадами','Открытое и закрытое','Пока не определились']),size,storage,timing],
     living:[choice('product','Какую мебель для гостиной планируете?',['Тумбу под ТВ','ТВ-зону со шкафами','Стеллаж или библиотеку','Витрину','Комплект мебели']),size,finish,timing],
@@ -60,17 +60,23 @@
       dialog.querySelector('#quiz-title').focus();
     });
   }
-  function open(kind){
+  function open(kind, modelId){
     ensureDialog();previousFocus=document.activeElement;
     const current=kind||(!document.body.classList.contains('home')?new URLSearchParams(location.search).get('category'):null);
     const known=kinds.some(k=>k[0]===current);
-    state={category:known?current:null,chooseType:!known,index:0,answers:{},contact:{}};
+    const model = window.YargaCatalogData?.solutions.find(item => item.id === modelId && item.category === current);
+    const answers = {};
+    if (model && current === 'kitchens') {
+      if (routes.kitchens[0].options.includes(model.style)) answers.style = model.style;
+      if (routes.kitchens[1].options.includes(model.type)) answers.layout = model.type;
+    }
+    state={category:known?current:null,chooseType:!known,index:0,answers,contact:{},model};
     render();closeMenus();dialog.showModal();document.body.classList.add('locked');dialog.querySelector('#quiz-title').focus();
   }
   function dimensionFields(){
     const a=state.answers.size||{};
     const kitchen=state.category==='kitchens';
-    const corner=['Угловая','П-образная','С островом'].includes(state.answers.layout);
+    const corner=['Угловая','П-образная','С островом','С полуостровом','Параллельная'].includes(state.answers.layout);
     const fields=kitchen?[['width','Длина основной линии','Например, 300'],...(corner?[['side','Длина второй стороны / острова','Например, 200']]:[]),['height','Высота помещения','Например, 270']]:[['width','Ширина','Например, 240'],['height','Высота','Например, 260'],['depth','Глубина','Например, 60']];
     return `<div class="quiz-dimensions">${fields.map(([id,label,placeholder])=>`<label>${label}, см<input data-size="${id}" type="number" inputmode="decimal" min="1" max="3000" step="0.1" value="${esc(a[id]||'')}" placeholder="${placeholder}" ${a.unknown?'disabled':''}></label>`).join('')}</div><label class="quiz-unknown"><input type="checkbox" name="unknownSize" ${a.unknown?'checked':''}>Размеров пока нет — нужна помощь с замером</label>`;
   }
@@ -98,7 +104,9 @@
   function advance(){saveInputs();if(!validStep())return;state.index=state.editing?steps().length-1:state.index+1;state.editing=false;render();}
   function summary(){
     const sizeText=a=>a?.unknown?'Уточним на замере':[['width','Ширина / длина'],['side','Вторая сторона / остров'],['height','Высота'],['depth','Глубина']].filter(([key])=>a?.[key]).map(([key,label])=>`${label}: ${a[key]} см`).join(', ');
-    return `<div class="quiz-summary"><h3>Ваш проект: ${esc(category()[1].toLowerCase())}</h3><dl>${steps().map((step,i)=>{
+    const model = state.model;
+    const modelRow = model ? `<div><dt>Модель</dt><dd>${esc(model.code ? model.code + ' · ' + model.name : model.name)}</dd></div>` : '';
+    return `<div class="quiz-summary"><h3>Ваш проект: ${esc(category()[1].toLowerCase())}</h3><dl>${modelRow}${steps().map((step,i)=>{
       if(['category','contact'].includes(step.id))return '';
       const answer=state.answers[step.id];const text=step.type==='size'?sizeText(answer):Array.isArray(answer)?answer.join(', '):answer;
       return `<div><dt>${esc(step.title)}</dt><dd>${esc(text)} <button type="button" data-quiz-edit="${i}" aria-label="Изменить: ${esc(step.title)}">Изменить</button></dd></div>`;
@@ -129,7 +137,7 @@
     const kind=kinds.find(k=>k[0]===id);button.dataset.quiz=kind?kind[0]:'';
     document.getElementById('catalog-quiz-title').textContent=kind?`Начнём с вашего проекта: ${kind[1].toLowerCase()}`:'Рассчитаем мебель под ваше пространство';
   }
-  document.addEventListener('click',event=>{const button=event.target.closest('[data-quiz]');if(button)open(button.dataset.quiz);});
+  document.addEventListener('click',event=>{const button=event.target.closest('[data-quiz]');if(button)open(button.dataset.quiz, button.dataset.quizModel);});
   window.YargaQuiz={open,updateEntry};
   updateEntry(new URLSearchParams(location.search).get('category'));
 })();
