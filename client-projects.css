@@ -85,6 +85,9 @@
   .order-grid h3 { font-size: 18px; }
   .order-grid p { font-size: 13px; }
 }
+@media (max-width: 360px) {
+  .hero h1 { font-size: 32px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .work-preview-image img { transition: none; }
 }
