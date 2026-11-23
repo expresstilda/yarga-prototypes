@@ -1,5 +1,7 @@
 (() => {
   const {sections,solutions}=window.YargaCatalogData;
+  const prices = window.YargaCatalogPricing ?? {};
+  const rubles = new Intl.NumberFormat('ru-RU', {style:'currency', currency:'RUB', maximumFractionDigits:0});
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const wire=()=>!!document.querySelector('link[href*="wireframe.css"]');
   const image=name=>`assets/${wire()?name.replace(/\.(webp|jpg)$/i,'.svg'):name}`;
@@ -24,8 +26,32 @@
     sort=search.get('sort')==='name'?'name':'default';
     return `<section class="container solutions-section" aria-labelledby="solutions-heading"><div class="catalog-tags" aria-label="Популярные подборки">${section.tags.map(tag=>{const field=items.some(s=>s.type===tag)?'type':'tone';return `<button type="button" data-catalog-tag="${esc(tag)}" data-field="${field}" aria-pressed="false">${tag}</button>`;}).join('')}</div><div class="catalog-toolbar"><button class="catalog-filter-toggle" aria-expanded="false" aria-controls="catalog-facets">Фильтры <span aria-hidden="true">☷</span></button><div class="catalog-facets" id="catalog-facets">${fields.map(([field,label])=>`<label>${label}<select data-catalog-facet="${field}" aria-label="${label}"><option value="">Все варианты</option>${[...new Set(items.map(s=>s[field]))].map(value=>`<option value="${esc(value)}" ${filters[field]===value?'selected':''}>${value}</option>`).join('')}</select></label>`).join('')}<button class="catalog-reset" data-catalog-reset type="button">Сбросить</button></div><label class="catalog-sort"><span class="sr-only">Порядок решений</span><select data-catalog-sort aria-label="Порядок решений"><option value="default">По подборке</option><option value="name" ${sort==='name'?'selected':''}>По названию</option></select></label></div><div class="catalog-results-heading"><h2 id="solutions-heading">${selected==='kitchens'?'Модели кухонь':'Модели мебели'}</h2><p id="catalog-result-count" aria-live="polite"></p></div><div class="solutions-grid" id="solutions-grid"></div><div class="catalog-more"><button class="button button-outline" type="button" data-catalog-more aria-controls="solutions-grid" hidden>Показать ещё</button></div><p class="catalog-image-note">${wire()?'Все изображения обозначены плейсхолдерами. Карточки показывают структуру будущего каталога. Стоимость рассчитываем индивидуально.':'Визуализации показывают варианты фасадов, материалов и планировок. Фотографии выполненных заказов собраны в <a href="index.html#portfolio">портфолио</a>. Стоимость рассчитываем индивидуально.'}</p></section>`;
   }
+  function priceAmount(price){
+    return `<strong>от ${rubles.format(price.amount)}</strong>${price.unit ? `<span> / ${esc(price.unit)}</span>` : ''}`;
+  }
+  function priceDetails(price){
+    if(!price)return '';
+    return `<section class="solution-pricing-details" aria-labelledby="solution-price-heading" tabindex="-1">
+      <h3 id="solution-price-heading">Ориентир для прототипа</h3>
+      <p class="solution-price-amount">${priceAmount(price)}</p>
+      <p class="solution-pricing-basis">${esc(price.basis)}</p>
+      <dl class="solution-pricing-terms">
+        <div><dt>Что входит</dt><dd>${esc(price.includes)}</dd></div>
+        <div><dt>Считается отдельно</dt><dd>${esc(price.separate)}</dd></div>
+        <div><dt>От чего зависит цена</dt><dd>${esc(price.factors)}</dd></div>
+      </dl>
+      ${price.note ? `<p class="solution-pricing-note">${esc(price.note)}</p>` : ''}
+      <p class="solution-pricing-note">Сумма приведена для указанной комплектации. Стоимость вашего проекта уточним по размерам и материалам.</p>
+    </section>`;
+  }
   function card(s){
-    return `<article class="solution-card"><button class="solution-picture" data-solution="${s.id}" aria-label="Подробнее: ${esc(s.name)}"><img src="${image(s.image)}" alt="${esc(s.name)}${s.real?' — работа Ярги':' — интерьерный пример'}" loading="lazy" width="1448" height="1086"><span class="solution-label">${wire()?'Плейсхолдер':s.real?'Работа Ярги':'Визуализация'}</span><span class="solution-expand" aria-hidden="true">↗</span></button><div class="solution-meta"><span>${s.code?esc(s.code)+" · ":""}${s.style}</span><span>${s.type}</span></div><h3><button data-solution="${s.id}">${s.name}</button></h3><p class="solution-description">${s.description}</p><div class="solution-bottom"><span>По вашим размерам</span><button class="text-button" data-quiz="${s.category}" data-quiz-model="${esc(s.id)}" aria-label="Рассчитать: ${esc(s.name)}">Рассчитать проект <span aria-hidden="true">↗</span></button></div></article>`;
+    const price = prices[s.id];
+    const summary = price ? `<div class="solution-price">
+      <p class="solution-price-status">Ориентир для прототипа</p>
+      <p class="solution-price-amount">${priceAmount(price)}</p>
+      <button class="solution-price-link" type="button" data-solution="${esc(s.id)}" data-solution-price aria-label="Что входит в цену: ${esc(s.name)}">Что входит в цену</button>
+    </div>` : '<span>Индивидуальный расчёт</span>';
+    return `<article class="solution-card"><button class="solution-picture" data-solution="${s.id}" aria-label="Подробнее: ${esc(s.name)}"><img src="${image(s.image)}" alt="${esc(s.name)}${s.real?' — работа Ярги':' — интерьерный пример'}" loading="lazy" width="1448" height="1086"><span class="solution-label">${wire()?'Плейсхолдер':s.real?'Работа Ярги':'Визуализация'}</span><span class="solution-expand" aria-hidden="true">↗</span></button><div class="solution-meta"><span>${s.code?esc(s.code)+" · ":""}${s.style}</span><span>${s.type}</span></div><h3><button data-solution="${s.id}">${s.name}</button></h3><p class="solution-description">${s.description}</p><div class="solution-bottom">${summary}<button class="text-button" data-quiz="${s.category}" data-quiz-model="${esc(s.id)}" aria-label="Рассчитать: ${esc(s.name)}">Рассчитать проект <span aria-hidden="true">↗</span></button></div></article>`;
   }
   function quizBanner(){
     const s=sections[selected];
@@ -75,15 +101,16 @@
     const url=new URL(location.href);for(const [key,value] of Object.entries(filters))value?url.searchParams.set(key,value):url.searchParams.delete(key);
     sort==='name'?url.searchParams.set('sort',sort):url.searchParams.delete('sort');if(location.protocol!=='file:')history.replaceState({},'',url);
   }
-  function openSolution(id){
+  function openSolution(id, showPrice){
     const s=solutions.find(item=>item.id===id);if(!s)return;
     previousFocus=document.activeElement;
     if(!detail){
       detail=document.createElement('dialog');detail.id='solution-dialog';detail.className='solution-dialog';detail.setAttribute('aria-labelledby','solution-title');document.getElementById('overlays').append(detail);
       detail.addEventListener('close',()=>{if(!document.querySelector('dialog[open]')){document.body.classList.remove('locked');previousFocus?.focus();}});
     }
-    detail.innerHTML=`<button type="button" class="dialog-close" data-solution-close aria-label="Закрыть решение">×</button><div class="solution-dialog-image"><img src="${image(s.image)}" alt="${esc(s.name)}"><span>${wire()?'Плейсхолдер изображения':s.real?'Фотография работы Ярги':'Интерьерный пример'}</span></div><div class="solution-dialog-copy"><p class="eyebrow">${sections[s.category].name} · ${s.code?esc(s.code):"По вашим размерам"}</p><h2 id="solution-title">${s.name}</h2><p>${s.description}</p><dl><div><dt>Стиль</dt><dd>${s.style}</dd></div><div><dt>Цветовая гамма</dt><dd>${s.tone}</dd></div><div><dt>${sections[s.category].typeLabel}</dt><dd>${s.type}</dd></div></dl><p class="solution-dialog-note">${s.real?'Можно обсудить похожий проект для вашего пространства.':'Это идея для индивидуального проекта. Размеры, материалы и комплектацию подберём под вашу задачу.'} Стоимость определим после уточнения деталей.</p><button class="button button-primary" data-solution-quote="${s.category}" data-quiz-model="${esc(s.id)}">Рассчитать похожий проект <span aria-hidden="true">↗</span></button></div>`;
+    detail.innerHTML=`<button type="button" class="dialog-close" data-solution-close aria-label="Закрыть решение">×</button><div class="solution-dialog-layout"><div class="solution-dialog-image"><img src="${image(s.image)}" alt="${esc(s.name)}"><span>${wire()?'Плейсхолдер изображения':s.real?'Фотография работы Ярги':'Интерьерный пример'}</span></div><div class="solution-dialog-copy"><p class="eyebrow">${sections[s.category].name} · ${s.code?esc(s.code):"По вашим размерам"}</p><h2 id="solution-title">${s.name}</h2><p>${s.description}</p><dl><div><dt>Стиль</dt><dd>${s.style}</dd></div><div><dt>Цветовая гамма</dt><dd>${s.tone}</dd></div><div><dt>${sections[s.category].typeLabel}</dt><dd>${s.type}</dd></div></dl>${priceDetails(prices[s.id])}<button class="button button-primary" data-solution-quote="${s.category}" data-quiz-model="${esc(s.id)}">Рассчитать похожий проект <span aria-hidden="true">↗</span></button></div></div>`;
     closeMenus();detail.showModal();document.body.classList.add('locked');
+    if(showPrice)detail.querySelector('.solution-pricing-details')?.focus();
   }
   function init(){
     if(document.body.dataset.page!=='catalog')return;
@@ -101,7 +128,7 @@
       const tag=event.target.closest('[data-catalog-tag]');if(tag){const field=tag.dataset.field;filters[field]=filters[field]===tag.dataset.catalogTag?'':tag.dataset.catalogTag;refresh();}
       if(event.target.closest('[data-catalog-reset]')){filters={style:'',tone:'',type:''};refresh();}
       const toggle=event.target.closest('.catalog-filter-toggle');if(toggle){const open=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(open));document.querySelector('.catalog-toolbar').classList.toggle('filters-open',open);}
-      const card=event.target.closest('[data-solution]');if(card)openSolution(card.dataset.solution);
+      const card=event.target.closest('[data-solution]');if(card)openSolution(card.dataset.solution,card.hasAttribute('data-solution-price'));
       if(event.target.closest('[data-solution-close]'))detail.close();
       const quote=event.target.closest('[data-solution-quote]');if(quote){detail.close();window.YargaQuiz.open(quote.dataset.solutionQuote, quote.dataset.quizModel);}
     });
