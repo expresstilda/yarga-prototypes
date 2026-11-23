@@ -53,7 +53,7 @@
         <figcaption>${esc(photo.alt)}</figcaption>
       </figure>`).join('')}
     </div>
-    <div class="container installations-footer"><button type="button" class="text-button" data-design-offer>Получить бесплатный дизайн-проект <span aria-hidden="true">↗</span></button></div>`;
+    <div class="container installations-footer"><a class="text-button" href="projects.html">Кейсы и детали работ <span aria-hidden="true">↗</span></a> <button type="button" class="text-button" data-design-offer>Получить бесплатный дизайн-проект <span aria-hidden="true">↗</span></button></div>`;
     if (!section.isConnected) {
       const before = document.querySelector('#main #reviews, #main .catalog-faq');
       if (before) before.before(section);
@@ -136,7 +136,7 @@
     });
     document.addEventListener('click',event => {
       if (event.target.closest('[data-design-offer]')) show(true);
-      if (event.target.closest('[data-form], [data-quiz], [data-solution-quote], a[href^="tel:"], a[href*="t.me/"], a[href*="max.ru/"]')) engaged = true;
+      if (event.target.closest('[data-form], [data-quiz], [data-solution-quote], [data-fast-inquiry], a[href^="tel:"], a[href*="t.me/"], a[href*="max.ru/"]')) engaged = true;
     });
     const started = performance.now();
     const timer = setInterval(() => {
@@ -147,6 +147,11 @@
       if (matchMedia('(pointer:fine)').matches && !event.relatedTarget && event.clientY <= 0 && performance.now() - started > 8000) show(false);
     });
   }
+
+  document.addEventListener('yarga:lead-action',event => {
+    const {action, category, model, caseId} = event.detail;
+    (window.dataLayer ??= []).push({event:'yarga_lead_action', lead_action:action, furniture_category:category, model_id:model, project_id:caseId});
+  });
 
   document.addEventListener('DOMContentLoaded',() => {
     const page = document.body.dataset.page || 'home';

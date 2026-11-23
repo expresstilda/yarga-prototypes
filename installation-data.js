@@ -334,7 +334,7 @@ window.YargaInstallations = {
     },
     {
       "image": "work-07-004.webp",
-      "alt": "Остров с ящиками для офисной кухни",
+      "alt": "Офисный модуль с выдвижными ящиками",
       "portrait": false
     },
     {

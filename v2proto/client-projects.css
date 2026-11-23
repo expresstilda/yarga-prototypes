@@ -1,0 +1,90 @@
+.hero-quick-note { color: #fff; font-size: 13px; margin: 14px 0 0; }
+.catalog-hero-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 19px; }
+.catalog-hero-actions .button { min-height: 44px; padding: 11px 20px; }
+.catalog-hero-wire .catalog-hero-actions .button-glass { color: var(--ink); border-color: var(--line); }
+.solution-card-actions { display: grid; gap: 6px; justify-items: start; flex-shrink: 0; }
+.solution-card-actions .model-fast-link { font-weight: 700; color: var(--ink); }
+.solution-card-actions .model-quiz-link { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+.work-list .section-heading { margin-bottom: 30px; }
+.work-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 22px; }
+.work-preview { min-width: 0; background: var(--soft); }
+.work-preview-image { display: block; overflow: hidden; aspect-ratio: 1.35; }
+.work-preview-image img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .36s ease; }
+.work-preview-image:hover img { transform: scale(1.035); }
+.work-preview-copy { padding: 26px 24px; }
+.work-preview-copy h3 { font-size: clamp(22px,2.2vw,31px); line-height: 1.15; margin: 8px 0 12px; }
+.work-preview-copy > p:not(.eyebrow) { color: var(--muted); font-size: 13px; margin: 0 0 15px; }
+.work-preview-copy h3 a { text-decoration: none; }
+.work-preview-copy h3 a:hover { color: var(--red); }
+.work-grid-single { grid-template-columns: minmax(0,1fr); }
+.work-grid-single > .work-preview { display: grid; grid-template-columns: 1.15fr 1fr; }
+.work-grid-single .work-preview-copy { align-self: center; padding: 30px clamp(22px,4vw,54px); }
+.work-related { display: grid; grid-template-columns: 85px minmax(0,1fr) 20px; align-items: center; gap: 12px; color: var(--ink); margin: 20px 0 0; padding: 10px; border: 1px solid var(--line); text-decoration: none; }
+.work-related img { display: block; width: 85px; height: 64px; object-fit: cover; }
+.work-related small { display: block; color: var(--muted); font-size: 11px; }
+.work-related strong { display: block; font-size: 13px; line-height: 1.35; }
+.work-related:hover { border-color: var(--red); }
+
+.budget-section { background: var(--soft); }
+.budget-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 23px; }
+.budget-tabs button { border: 1px solid var(--line); padding: 9px 16px; min-height: 41px; background: var(--paper); color: var(--ink); }
+.budget-tabs button[aria-pressed="true"] { background: var(--red); color: #fff; border-color: var(--red); }
+.budget-basis h3 { font-size: clamp(24px,3vw,38px); line-height: 1.15; margin: 0; }
+.budget-basis p { color: var(--muted); max-width: 720px; margin: 9px 0 21px; }
+.budget-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+.budget-option { padding: clamp(18px,3vw,34px); background: var(--paper); border-top: 3px solid var(--line); }
+.budget-option:nth-child(2) { border-top-color: var(--red); }
+.budget-option h4 { font-size: 24px; line-height: 1.2; margin: 7px 0; }
+.budget-option .budget-amount { font-size: clamp(25px,3.4vw,44px); line-height: 1.15; font-variant-numeric: tabular-nums; margin: 7px 0; color: var(--ink); }
+.budget-option p:not(.eyebrow,.budget-amount) { color: var(--muted); min-height: 44px; font-size: 14px; margin: 10px 0; }
+.budget-option .text-button { text-align: left; }
+.budget-exclusions { color: var(--muted); font-size: 13px; margin: 17px 0 0; }
+
+.order-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 21px; margin-bottom: 26px; }
+.order-grid article { border-top: 1px solid var(--red); padding-top: 15px; }
+.order-grid h3 { font-size: 22px; line-height: 1.2; margin: 0 0 9px; }
+.order-grid p { color: var(--muted); font-size: 14px; margin: 0 0 9px; }
+.order-grid a { font-size: 13px; text-underline-offset: 3px; }
+.order-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.work-page-intro { padding-top: clamp(35px,7vw,88px); margin-bottom: 31px; }
+.work-page-intro nav { color: var(--muted); font-size: 12px; margin-bottom: 28px; }
+.work-page-intro h1 { font-size: clamp(40px,6vw,78px); line-height: 1.02; max-width: 950px; margin: 10px 0 15px; }
+.work-page-intro > p:not(.eyebrow) { max-width: 680px; color: var(--muted); margin: 0 0 20px; }
+.work-page-content { display: grid; grid-template-columns: 1.65fr 1fr; align-items: start; gap: clamp(24px,4.5vw,70px); }
+.work-photo-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 15px; }
+.work-photo { min-width: 0; margin: 0; }
+.work-photo-main { grid-column: 1 / -1; }
+.work-photo button { width: 100%; display: block; padding: 0; border: 0; background: var(--soft); }
+.work-photo img { display: block; width: 100%; height: auto; max-height: 59svh; object-fit: contain; }
+.work-photo:not(.work-photo-main) img { aspect-ratio: 1.2; object-fit: cover; }
+.work-photo figcaption { color: var(--muted); font-size: 12px; margin-top: 6px; }
+.work-page-details { border-top: 1px solid var(--line); padding-top: 18px; }
+.work-page-details h2 { font-size: clamp(26px,3vw,38px); line-height: 1.15; margin: 0; }
+.work-page-details dl { margin: 17px 0; }
+.work-page-details dl > div { border-top: 1px solid var(--line); padding: 8px 0; }
+.work-page-details dt { color: var(--muted); font-size: 11px; }
+.work-page-details dd { margin: 3px 0 0; font-size: 14px; }
+.work-page-details .button { margin: 10px 0 7px; }
+.work-page-details .text-button { width: fit-content; margin-top: 5px; }
+.reviews-grid .review-card { display: flex; flex-direction: column; }
+.reviews-grid .review-card .review-content { flex: 1; }
+
+@media (max-width: 960px) {
+  .order-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 700px) {
+  .hero-quick-note { font-size: 12px; margin-top: 10px; }
+  .catalog-hero-actions .button { min-height: 40px; padding: 9px 12px; }
+  .work-grid { grid-template-columns: minmax(0,1fr); gap: 18px; }
+  .work-grid-single > .work-preview { display: block; }
+  .work-preview-copy, .work-grid-single .work-preview-copy { padding: 18px; }
+  .budget-grid, .work-page-content { grid-template-columns: minmax(0,1fr); }
+  .budget-option p:not(.eyebrow,.budget-amount) { min-height: 0; }
+  .work-page-intro .button, .work-page-details .button { max-width: 100%; height: auto; }
+  .order-grid { gap: 16px 12px; }
+  .order-grid h3 { font-size: 18px; }
+  .order-grid p { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .work-preview-image img { transition: none; }
+}
