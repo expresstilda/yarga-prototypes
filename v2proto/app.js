@@ -27,18 +27,21 @@ function renderCatalog(filter='all'){
   if(grid){grid.classList.toggle('single-result',filter!=='all');grid.innerHTML=categories.filter(c=>filter==='all'||c.id===filter).map(categoryCard).join('');}
   updateFavoritesCount();
 }
-const portfolio=[
-  {number:8,alt:'Светлая угловая кухня Ярги с колонной встроенной техники'},
-  {number:1,alt:'Светлая кухня Ярги с витринами и подсветкой'},
-  {number:3,alt:'Компактная кухня Ярги с деревянным акцентом'},
-  {number:5,alt:'Кухня Ярги с тёмно-синими фасадами'},
-  {number:6,alt:'Белая кухня Ярги с деревянной столешницей'},
-  {number:7,alt:'Кухня Ярги с синими верхними фасадами и подсветкой'},
-  {number:9,alt:'Кухня Ярги с выразительной фактурой дерева'},
-  {number:10,alt:'Кухня Ярги в светлых древесных оттенках'},
-  {number:2,alt:'Классическая кухня Ярги в загородном доме'}
+const portfolio = [
+  {"image": "work-light-corner.svg", "alt": "Светлая угловая кухня со встроенной техникой"},
+  {"image": "work-blue-linear.svg", "alt": "Прямая кухня с серо-синим верхним рядом"},
+  {"image": "work-green-kitchen.svg", "alt": "Зелёная кухня с остеклённым шкафом"},
+  {"image": "work-white-country.svg", "alt": "Белая кухня с деревянной столешницей"},
+  {"image": "work-dressing.svg", "alt": "Гардеробная в нише с открытыми секциями"},
+  {"image": "work-wardrobe.svg", "alt": "Белый встроенный шкаф с распашными дверями"},
+  {"image": "work-hallway.svg", "alt": "Прихожая со шкафами и мягкой скамьёй"},
+  {"image": "work-living.svg", "alt": "ТВ-зона с тумбой и открытыми секциями"},
+  {"image": "work-reception.svg", "alt": "Стойка ресепшн с закруглённым фасадом"},
+  {"image": "work-office-kitchen.svg", "alt": "Компактная кухня для офисной зоны"}
 ];
-function portfolioPath(index){return `assets/portfolio-${String(portfolio[index].number).padStart(2,'0')}.svg`;}
+function portfolioPath(index) {
+  return `assets/${portfolio[index].image}`;
+}
 function renderPortfolio(){const grid=document.getElementById('portfolio-grid');if(grid)grid.innerHTML=portfolio.map((p,i)=>`<figure class="portfolio-tile"><button data-gallery="${i}" aria-label="Увеличить: ${p.alt}"><img src="${portfolioPath(i)}" alt="${p.alt}" loading="lazy"><span class="portfolio-zoom" aria-hidden="true">+</span></button></figure>`).join('');}
 
 function createDialogs(){
