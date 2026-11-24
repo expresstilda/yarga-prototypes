@@ -51,9 +51,9 @@
     modal.setAttribute('aria-describedby', 'fast-inquiry-description');
     modal.innerHTML = `
       <button class="dialog-close" type="button" data-fast-close aria-label="Закрыть окно">×</button>
-      <h2 id="fast-inquiry-title" tabindex="-1">Расчёт по фото</h2>
+      <h2 id="fast-inquiry-title" tabindex="-1">Предварительный расчёт мебели</h2>
       <p class="fast-inquiry-selection" data-fast-selection hidden></p>
-      <p class="dialog-description" id="fast-inquiry-description">Прикрепите в чате фото, эскиз или ссылку на понравившуюся мебель. Если знаете примерные размеры, добавьте их к сообщению.</p>
+      <p class="dialog-description" id="fast-inquiry-description">Пришлите в чат фото, эскиз, план или ссылку на понравившуюся мебель. Если знаете примерные размеры, укажите их в сообщении.</p>
       <div class="fast-inquiry-actions">
         <a class="button button-primary" data-fast-telegram target="_blank" rel="noopener noreferrer">Написать в Telegram <span aria-hidden="true">↗</span></a>
         <a class="button button-outline" data-fast-max target="_blank" rel="noopener noreferrer">Написать в MAX <span aria-hidden="true">↗</span></a>

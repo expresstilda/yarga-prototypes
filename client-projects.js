@@ -133,7 +133,7 @@
   function addBudget(section, category) {
     section.className = 'section budget-section';
     section.setAttribute('aria-labelledby','budget-title');
-    section.innerHTML = `<div class="container"><div class="section-heading"><div><h2 id="budget-title">Сколько стоит мебель</h2></div><p class="section-intro">Сравните две комплектации при одинаковых размерах. Суммы ориентировочные. Итоговую смету согласуем после обсуждения проекта.</p></div><div class="budget-tabs" aria-label="Выбрать пример расчёта">${Object.entries(budgets).map(([key,value])=>`<button type="button" data-budget="${key}" aria-controls="budget-panel" aria-pressed="${key===category}">${value.label}</button>`).join('')}</div><div id="budget-panel" aria-live="polite">${budgetPanel(category)}</div></div>`;
+    section.innerHTML = `<div class="container"><div class="section-heading"><div><h2 id="budget-title">Примеры расчёта</h2></div><p class="section-intro">Сравните, сколько стоят две комплектации мебели одного размера. Итоговую цену посчитаем по вашим размерам и материалам.</p></div><div class="budget-tabs" aria-label="Выбрать пример расчёта">${Object.entries(budgets).map(([key,value])=>`<button type="button" data-budget="${key}" aria-controls="budget-panel" aria-pressed="${key===category}">${value.label}</button>`).join('')}</div><div id="budget-panel" aria-live="polite">${budgetPanel(category)}</div></div>`;
     section.addEventListener('click',event => {
       const button = event.target.closest('[data-budget]');
       if (!button || button.getAttribute('aria-pressed') === 'true') return;
@@ -145,7 +145,7 @@
   function addProcess(section) {
     section.className = 'section container order-steps';
     section.setAttribute('aria-labelledby','order-title');
-    section.innerHTML = `<div class="section-heading"><div><h2 id="order-title">Как проходит заказ</h2></div><p class="section-intro">Заранее обсуждаем стоимость, сроки и кто отвечает за каждый этап.</p></div><div class="order-grid">
+    section.innerHTML = `<div class="section-heading"><div><h2 id="order-title">Как проходит заказ</h2></div></div><div class="order-grid">
       <article><h3>Фото и размеры</h3><p>Пришлите фото помещения, эскиз или ссылку. Обсудим планировку, материалы и ориентир по цене.</p></article>
       <article><h3>Проект и смета</h3><p>Согласуем состав бесплатного дизайн-проекта и удобное время замера. После уточнения размеров подготовим смету на выбранную комплектацию.</p></article>
       <article><h3>Договор и производство</h3><p>Фиксируем состав мебели, стоимость, сроки и этапы оплаты. Изготавливаем мебель в Воронеже.</p><a href="payment.html">Как устроена оплата</a></article>
@@ -156,7 +156,7 @@
   function renderProjectPage(main) {
     const project = find(new URLSearchParams(location.search).get('project'));
     if (!project) {
-      main.innerHTML = `<div class="container work-page-intro"><h1>Работы Ярги</h1><p>Корпусная мебель, которую мы изготовили для дома и бизнеса.</p></div>${workList(projects,'Дома и в офисах')}`;
+      main.innerHTML = `<div class="container work-page-intro"><h1>Работы Ярги</h1><p>Корпусная мебель, которую мы изготовили для дома и бизнеса.</p></div>${workList(projects,'Выполненные проекты')}`;
       return;
     }
     document.title = `${project.title} — работы Ярги`;

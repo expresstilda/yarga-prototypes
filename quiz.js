@@ -181,7 +181,7 @@
     const contact=window.YargaContact;
     return `<div class="quiz-contact-layout"><div class="quiz-contact">
       <form data-quiz-request>
-        <h3>Куда перезвонить?</h3>
+        <h3>Как с вами связаться</h3>
         <div class="quiz-contact-fields">
           <label>Ваше имя<input data-quiz-contact name="name" type="text" autocomplete="name" placeholder="Как к вам обращаться" required maxlength="80" value="${esc(state.contact.name)}"></label>
           <label>Телефон<input data-quiz-contact name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7 900 000-00-00" required maxlength="32" value="${esc(state.contact.phone)}"></label>
@@ -191,12 +191,12 @@
         <p class="quiz-contact-note" data-quiz-email-status hidden><a data-quiz-email-link>Открыть письмо ещё раз</a></p>
       </form>
       <div class="quiz-chat-options" aria-label="Связаться в мессенджере">
-        <h3>Удобнее написать?</h3>
+        <h3>Написать в мессенджере</h3>
         <div class="contact-actions">
           <a class="button button-outline" href="${esc(contact.telegramDraft(requestText()))}" target="_blank" rel="noopener noreferrer">Продолжить в Telegram <span aria-hidden="true">↗</span></a>
           <a class="button button-outline" href="${esc(contact.maxUrl)}" target="_blank" rel="noopener noreferrer">Написать в MAX <span aria-hidden="true">↗</span></a>
         </div>
-        <p class="quiz-contact-note">В Telegram откроется черновик с ответами. Для MAX скопируйте заявку и вставьте её в чат. При копировании добавятся заполненные контакты.</p>
+        <p class="quiz-contact-note">В Telegram откроется черновик с ответами. Чтобы отправить заявку в MAX, скопируйте её и вставьте в чат. В копию попадут и контакты, если вы их указали.</p>
         <button class="text-button" type="button" data-quiz-copy>Скопировать заявку</button>
         <p class="quiz-contact-note" data-quiz-copy-status role="status"></p>
         <label data-quiz-copy-fallback hidden>Текст заявки<textarea rows="5" readonly></textarea></label>
@@ -208,13 +208,13 @@
     let body='';
     if(step.type==='category')body=`<div class="quiz-categories">${kinds.map(([id,name,image])=>`<label class="quiz-category"><input type="radio" name="category" value="${id}" ${state.category===id?'checked':''}>${image?`<img src="assets/${image}.${isWireframe()?'svg':'webp'}" alt="" width="480" height="300">`:'<span class="quiz-other" aria-hidden="true">＋</span>'}<span class="quiz-option-label">${name}<i aria-hidden="true"></i></span></label>`).join('')}</div>`;
     else if(step.type==='size')body=dimensionFields();
-    else if(step.type==='text')body=`<label class="quiz-description-label">Предмет и пожелания<textarea name="description" rows="4" maxlength="1500" placeholder="Что изготовить и где будет стоять">${esc(selected)}</textarea></label>`;
+    else if(step.type==='text')body=`<label class="quiz-description-label">Что нужно изготовить<textarea name="description" rows="4" maxlength="1500" placeholder="Что изготовить и где будет стоять">${esc(selected)}</textarea></label>`;
     else if(step.type==='contact')body=contactStep();
     else body=`<fieldset class="quiz-options"><legend class="sr-only">${esc(step.title)}</legend>${step.options.map(option=>`<label class="quiz-option"><input type="${step.type==='multi'?'checkbox':'radio'}" name="answer" value="${esc(option)}" ${Array.isArray(selected)?selected.includes(option)?'checked':'':selected===option?'checked':''}><span>${option}</span><i aria-hidden="true"></i></label>`).join('')}</fieldset>`;
     const progress=Math.round(state.index/(list.length-1)*100);
-    const backMarkup=state.index?`<button class="text-button" type="button" data-quiz-back>${state.editing?'← К сводке':'← Назад'}</button>`:'<span class="quiz-time">Около 2 минут</span>';
+    const backMarkup=state.index?`<button class="text-button" type="button" data-quiz-back>${state.editing?'← К ответам':'← Назад'}</button>`:'<span class="quiz-time">Около 2 минут</span>';
     const nextMarkup=step.type!=='contact'?`<button class="button button-primary" type="button" data-quiz-next>${state.editing?'Сохранить':'Далее'} <span aria-hidden="true">→</span></button>`:'';
-    dialog.innerHTML=`<button class="dialog-close" type="button" data-quiz-close aria-label="Закрыть квиз">×</button><div class="quiz-sidebar"><a class="wordmark" href="index.html">ЯРГА<small>Мебель на заказ</small></a><p class="eyebrow">Ваш проект начинается здесь</p><h2>Мебель,<br>которая подходит<br>именно вам.</h2><p>Несколько вопросов о вашем пространстве и пожеланиях — для предметного разговора о стоимости.</p><div class="quiz-sidebar-note">По вашим размерам<br>Напрямую от производителя<br>Москва и Московская область</div></div><div class="quiz-body"><div class="quiz-progress-info"><span>${category()?esc(category()[1]):state.purpose==='design'?'Дизайн-проект':'Расчёт мебели'}</span><span>Шаг ${state.index+1} из ${list.length}</span></div><div class="quiz-progress" role="progressbar" aria-label="Прогресс квиза" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div><h2 id="quiz-title" tabindex="-1">${step.title}</h2><p class="quiz-hint">${step.hint||(step.type==='category'?'Выберите направление — дальше будут вопросы именно о вашей мебели.':step.type==='contact'?'Проверьте ответы. Любой пункт можно изменить.':'Выберите один вариант.')}</p>${body}<div class="quiz-navigation">${backMarkup}${nextMarkup}</div></div>`;
+    dialog.innerHTML=`<button class="dialog-close" type="button" data-quiz-close aria-label="Закрыть квиз">×</button><div class="quiz-sidebar"><a class="wordmark" href="index.html">ЯРГА<small>Мебель на заказ</small></a><h2>${state.purpose==='design'?'Дизайн-проект мебели':'Расчёт стоимости мебели'}</h2><p>Укажите, какую мебель хотите заказать, и ответьте на вопросы о размерах и материалах.</p></div><div class="quiz-body"><div class="quiz-progress-info"><span>${category()?esc(category()[1]):state.purpose==='design'?'Дизайн-проект':'Расчёт мебели'}</span><span>Шаг ${state.index+1} из ${list.length}</span></div><div class="quiz-progress" role="progressbar" aria-label="Прогресс квиза" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div><h2 id="quiz-title" tabindex="-1">${step.title}</h2><p class="quiz-hint">${step.hint||(step.type==='category'?'Выберите мебель, которую хотите заказать.':step.type==='contact'?'Проверьте ответы. Любой пункт можно изменить.':'Выберите один вариант.')}</p>${body}<div class="quiz-navigation">${backMarkup}${nextMarkup}</div></div>`;
     const next=dialog.querySelector('[data-quiz-next]');if(next)next.disabled=!validStep();
     dialog.scrollTop=0;dialog.querySelector('.quiz-body').scrollTop=0;
     if(dialog.open)dialog.querySelector('#quiz-title').focus();
@@ -222,7 +222,7 @@
   function updateEntry(id){
     const button=document.querySelector('[data-catalog-quiz]');if(!button)return;
     const kind=kinds.find(k=>k[0]===id);button.dataset.quiz=kind?kind[0]:'';
-    document.getElementById('catalog-quiz-title').textContent=kind?`Начнём с вашего проекта: ${kind[1].toLowerCase()}`:'Рассчитаем мебель под ваше пространство';
+    document.getElementById('catalog-quiz-title').textContent=kind?`Вы выбрали: ${kind[1].toLowerCase()}`:'Рассчитать стоимость мебели';
   }
   document.addEventListener('click',event=>{const button=event.target.closest('[data-quiz]');if(button)open(button.dataset.quiz, button.dataset.quizModel);});
   window.YargaQuiz={open,updateEntry};

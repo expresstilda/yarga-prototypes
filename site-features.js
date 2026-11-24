@@ -1,7 +1,7 @@
 (() => {
   const offers = {
     home: ['Бесплатный дизайн-проект мебели', 'Расскажите, какая мебель нужна. Подберём планировку, фасады и наполнение по размерам вашего помещения.', 'kitchens'],
-    catalog: ['Бесплатный дизайн-проект мебели', 'Выберите, что хотите заказать. Поможем подобрать конструкцию, материалы и комплектацию.', 'wardrobes'],
+    catalog: ['Бесплатный дизайн-проект мебели', 'Выберите тип мебели и расскажите о размерах комнаты. Обсудим материалы и наполнение.', 'wardrobes'],
     kitchens: ['Бесплатный дизайн-проект кухни', 'Продумайте с дизайнером рабочую зону, расположение техники и места для хранения. Подберём фасады под ваш интерьер.', 'kitchens'],
     wardrobes: ['Бесплатный дизайн-проект шкафа', 'Подберём двери и наполнение под ваши вещи. Учтём нишу, высоту потолка и место для открывания.', 'wardrobes'],
     dressing: ['Бесплатный дизайн-проект гардеробной', 'Распределим штанги, полки и выдвижные секции так, чтобы обувь, длинная одежда и повседневные вещи были под рукой.', 'dressing'],
@@ -9,10 +9,10 @@
     hallways: ['Бесплатный дизайн-проект прихожей', 'Найдём место для верхней одежды, обуви и скамьи. Учтём ширину прохода и открывание входной двери.', 'hallways'],
     offices: ['Бесплатный дизайн-проект кабинета', 'Расположим стол, полки и шкафы с учётом света, техники и хранения документов.', 'offices'],
     business: ['Бесплатный дизайн-проект мебели для вашего объекта', 'Обсудим стойку, рабочие места и хранение. Учтём план помещения и задачи команды.', 'offices'],
-    designers: ['Поможем с дизайн-проектом мебели', 'Обсудим ваш эскиз и бесплатно подготовим решение по размерам, материалам и конструкции мебели.', 'living'],
-    about: ['Начните с бесплатного дизайн-проекта', 'Расскажите о помещении. Подберём материалы и покажем, как мебель будет выглядеть в вашем пространстве.', 'wardrobes'],
+    designers: ['Бесплатный дизайн-проект мебели', 'Если у вас есть эскиз, обсудим по нему размеры, материалы и конструкцию мебели.', 'living'],
+    about: ['Бесплатный дизайн-проект мебели', 'Расскажите о комнате и мебели, которую хотите заказать. Подберём материалы и покажем, как будет выглядеть мебель.', 'wardrobes'],
     delivery: ['Бесплатный дизайн-проект мебели', 'При проектировании учтём габариты комнаты, проходы и особенности установки.', 'hallways'],
-    payment: ['Бесплатный дизайн-проект и предварительный расчёт', 'Согласуем, какие секции, материалы и фурнитура нужны для вашего проекта.', 'kitchens']
+    payment: ['Бесплатный дизайн-проект и предварительный расчёт', 'По вашим размерам подберём материалы, фурнитуру и наполнение, чтобы рассчитать стоимость.', 'kitchens']
   };
 
   const photos = window.YargaInstallations;
@@ -53,7 +53,7 @@
         <figcaption>${esc(photo.alt)}</figcaption>
       </figure>`).join('')}
     </div>
-    <div class="container installations-footer"><a class="text-button" href="projects.html">Кейсы и детали работ <span aria-hidden="true">↗</span></a> <button type="button" class="text-button" data-design-offer>Получить бесплатный дизайн-проект <span aria-hidden="true">↗</span></button></div>`;
+    <div class="container installations-footer"><a class="text-button" href="projects.html">Посмотреть работы <span aria-hidden="true">↗</span></a> <button type="button" class="text-button" data-design-offer>Получить бесплатный дизайн-проект <span aria-hidden="true">↗</span></button></div>`;
     if (!section.isConnected) {
       const before = document.querySelector('#main #reviews, #main .catalog-faq');
       if (before) before.before(section);
@@ -138,7 +138,7 @@
       <div class="design-offer-image"><img src="${wire() ? 'assets/work-placeholder.svg' : `assets/category-${picture}.webp`}" alt="" width="640" height="800" decoding="async" loading="lazy"></div>
       <div class="design-offer-copy"><span class="design-offer-brand">ЯРГА</span><h2 id="design-offer-title" tabindex="-1">${title}</h2><p>${description}</p>
       <button type="button" class="button button-primary" data-offer-start>Получить дизайн-проект <span aria-hidden="true">↗</span></button>
-      <button type="button" class="design-offer-dismiss" data-offer-close>Продолжить просмотр</button></div>`;
+      <button type="button" class="design-offer-dismiss" data-offer-close>Закрыть</button></div>`;
     document.getElementById('overlays').append(dialog);
     let engaged = false;
     let shownOnPage = false;
