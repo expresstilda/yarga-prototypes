@@ -47,3 +47,20 @@ dialog{border:0;padding:0;color:var(--ink);max-width:calc(100% - 32px);max-heigh
 .form-dialog, .quiz-dialog, .quiz-body, .solution-dialog-layout, .design-offer { overscroll-behavior: contain; }
 .dialog-close { min-width: 44px; min-height: 44px; }
 .inner-hero-action { margin-top: 25px; }
+
+.designer-hero-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(340px, 1fr);
+  align-items: start;
+  gap: clamp(28px, 5vw, 80px);
+}
+.designer-hero-layout h1 { font-size: clamp(38px, 4.3vw, 66px); line-height: 1.08; text-wrap: balance; }
+.designer-inquiry { min-width: 0; padding: clamp(22px, 3vw, 40px); border: 1px solid var(--line); background: var(--paper); }
+.designer-inquiry h2 { font-size: clamp(25px, 2.4vw, 37px); line-height: 1.13; }
+.designer-inquiry > p { margin: 12px 0 20px; color: var(--muted); }
+.designer-inquiry .lead-fields input { padding: 11px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; color: var(--ink); }
+.designer-inquiry .lead-form { margin: 0; }
+@media (max-width: 780px) {
+  .designer-hero-layout { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  .designer-hero-layout h1 { font-size: clamp(31px, 7vw, 45px); }
+}

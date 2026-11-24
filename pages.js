@@ -18,21 +18,17 @@ window.YargaPages={render(page,categories){
       kind: "consult",
     },
     designers: {
-      name: "Сотрудничество",
-      title: "Изготавливаем мебель по проектам дизайнеров",
-      lead: "Пришлите эскиз или чертежи. По чертежам оценим стоимость и обсудим, какие материалы и фурнитура подойдут.",
+      name: "Дизайнерам",
+      title: "Программа сотрудничества для дизайнеров интерьера",
+      lead: "Изготавливаем кухни, шкафы, гардеробные и другую корпусную мебель по вашим проектам. Помогаем подобрать материалы и фурнитуру, рассчитываем стоимость и согласуем монтаж.",
       image: "category-offices.webp",
-      heading: "Что согласуем перед изготовлением",
-      text: "Сверим размеры и наполнение, обсудим конструкцию и отделку. Если потребуется заменить материал или изменить деталь, согласуем это до начала работы.",
+      heading: "Как работаем с вашим проектом",
+      text: "По плану или эскизу обсудим размеры, отделку и наполнение. Если нужно изменить конструкцию или заменить материал, согласуем это с вами до изготовления.",
       cards: [
         ["Чертежи и размеры", "Посмотрим план, размеры и чертежи. Если для расчёта чего-то не хватает, скажем, какие данные нужны."],
         ["Фасады и фурнитура", "Подберём материалы и фурнитуру с учётом бюджета и согласуем образцы."],
         ["Изготовление и монтаж", "Обсудим сроки, доставку и условия монтажа на объекте."],
       ],
-      cta: "Есть чертежи или техническое задание?",
-      ctaText: "Приложите их к заявке. Подойдут и эскизы с примерными размерами.",
-      button: "Обсудить сотрудничество",
-      kind: "designer",
     },
     business: {
       name: "Бизнесу",
@@ -89,9 +85,40 @@ window.YargaPages={render(page,categories){
   if(page==='projects')return '';
   if(page==='catalog')return window.YargaCatalog.render();
   const d=data[page]||data.about;
-  const partnerPage=page==='business'||page==='designers';
-  const action=partnerPage
-    ? `<button type="button" class="button button-primary" data-fast-inquiry data-fast-category="${page==='business'?'business':''}" data-fast-detail="${page==='business'?'Мебель по плану объекта':'Расчёт мебели по техническому заданию'}">${page==='business'?'Прислать план объекта':'Отправить ТЗ на расчёт'} <span aria-hidden="true">↗</span></button>`
+  const cards = d.cards.map(([title, text], index) => `<article class="info-card"><p class="step">0${index+1}</p><h3>${title}</h3><p>${text}</p></article>`).join('');
+  if (page === 'designers') {
+    return `
+      <section class="inner-hero">
+        <div class="container">
+          <div class="breadcrumbs"><a href="index.html">Главная</a> / ${d.name}</div>
+          <div class="designer-hero-layout">
+            <div>
+              <h1>${d.title}</h1>
+              <p class="lead">${d.lead}</p>
+            </div>
+            <section class="designer-inquiry" id="designer-inquiry" aria-labelledby="designer-inquiry-title">
+              <h2 id="designer-inquiry-title">Обсудить сотрудничество</h2>
+              <p>Оставьте имя и телефон. Мы перезвоним, расскажем об условиях программы и ответим на ваши вопросы.</p>
+              ${window.YargaLeadForm.markup({}, {callback:true})}
+            </section>
+          </div>
+        </div>
+      </section>
+      <section class="inner-content container" aria-labelledby="designer-work-title">
+        <div class="inner-split">
+          <img src="assets/${d.image}" alt="" loading="lazy" width="1448" height="1086">
+          <div>
+            <h2 id="designer-work-title">${d.heading}</h2>
+            <p>${d.text}</p>
+            <a class="text-button" href="projects.html">Посмотреть работы Ярги <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="info-grid">${cards}</div>
+      </section>`;
+  }
+  const businessPage = page === 'business';
+  const action = businessPage
+    ? `<button type="button" class="button button-primary" data-fast-inquiry data-fast-category="business" data-fast-detail="Мебель по плану объекта">Прислать план объекта <span aria-hidden="true">↗</span></button>`
     : `<button class="button button-primary" data-form="${d.kind}">${d.button} <span aria-hidden="true">↗</span></button>`;
-  return `<section class="inner-hero"><div class="container"><div class="breadcrumbs"><a href="index.html">Главная</a> / ${d.name}</div><h1>${d.title}</h1><p class="lead">${d.lead}</p>${partnerPage?`<div class="inner-hero-action">${action}</div>`: ''}</div></section><section class="inner-content container"><div class="inner-split"><img src="assets/${d.image}" alt=""><div><h2>${d.heading}</h2><p>${d.text}</p>${partnerPage?'':action}</div></div><div class="info-grid">${d.cards.map((c,i)=>`<article class="info-card"><p class="step">0${i+1}</p><h3>${c[0]}</h3><p>${c[1]}</p></article>`).join('')}</div>${page==='about'?'<div class="catalog-detail" id="guarantee" style="margin:0 0 60px"><h2>Гарантия на мебель</h2><p>Срок и условия гарантии указываем в договоре. Они зависят от материалов и комплектующих. До заказа объясним, как ухаживать за мебелью и куда обращаться по гарантии.</p></div>':''}<div class="inner-cta"><div><h2>${d.cta}</h2><p>${d.ctaText}</p></div>${action}</div></section>`;
+  return `<section class="inner-hero"><div class="container"><div class="breadcrumbs"><a href="index.html">Главная</a> / ${d.name}</div><h1>${d.title}</h1><p class="lead">${d.lead}</p>${businessPage?`<div class="inner-hero-action">${action}</div>`: ''}</div></section><section class="inner-content container"><div class="inner-split"><img src="assets/${d.image}" alt=""><div><h2>${d.heading}</h2><p>${d.text}</p>${businessPage?'':action}</div></div><div class="info-grid">${cards}</div>${page==='about'?'<div class="catalog-detail" id="guarantee" style="margin:0 0 60px"><h2>Гарантия на мебель</h2><p>Срок и условия гарантии указываем в договоре. Они зависят от материалов и комплектующих. До заказа объясним, как ухаживать за мебелью и куда обращаться по гарантии.</p></div>':''}<div class="inner-cta"><div><h2>${d.cta}</h2><p>${d.ctaText}</p></div>${action}</div></section>`;
 }};

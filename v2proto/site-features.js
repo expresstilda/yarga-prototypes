@@ -9,7 +9,6 @@
     hallways: ['Бесплатный дизайн-проект прихожей', 'Найдём место для верхней одежды, обуви и скамьи. Учтём ширину прохода и открывание входной двери.', 'hallways'],
     offices: ['Бесплатный дизайн-проект кабинета', 'Расположим стол, полки и шкафы с учётом света, техники и хранения документов.', 'offices'],
     business: ['Бесплатный дизайн-проект мебели для вашего объекта', 'Обсудим стойку, рабочие места и хранение. Учтём план помещения и задачи команды.', 'offices'],
-    designers: ['Бесплатный дизайн-проект мебели', 'Если у вас есть эскиз, обсудим по нему размеры, материалы и конструкцию мебели.', 'living'],
     about: ['Бесплатный дизайн-проект мебели', 'Расскажите о комнате и мебели, которую хотите заказать. Подберём материалы и покажем, как будет выглядеть мебель.', 'wardrobes'],
     delivery: ['Бесплатный дизайн-проект мебели', 'При проектировании учтём габариты комнаты, проходы и особенности установки.', 'hallways'],
     payment: ['Бесплатный дизайн-проект и предварительный расчёт', 'По вашим размерам подберём материалы, фурнитуру и наполнение, чтобы рассчитать стоимость.', 'kitchens']
@@ -206,9 +205,9 @@
   }
 
   function addOffer(page) {
-    const partnerPage = page === 'business' || page === 'designers';
+    const partnerPage = page === 'business';
     const startDesign = () => {
-      if (partnerPage) window.YargaContact.open(page === 'designers' ? 'designer' : page, true);
+      if (partnerPage) window.YargaContact.open('business', true);
       else window.YargaQuiz.open(photos[page] ? page : undefined, undefined, 'design');
     };
     const [title, description, picture] = offers[page] || offers.catalog;
@@ -281,6 +280,6 @@
     const category = new URLSearchParams(location.search).get('category');
     const section = page === 'catalog' && Object.hasOwn(window.YargaCatalogData?.sections ?? {}, category) ? category : page;
     if (page === 'home') addInstallations();
-    addOffer(section);
+    if (page !== 'designers') addOffer(section);
   });
 })();
