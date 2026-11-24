@@ -60,30 +60,39 @@
 
   const budgets = {
     kitchens: {
-      label:'Кухня', title:'Прямая кухня длиной 3 м',
-      shared:'Нижний и верхний ряды, корпуса из ЛДСП, полки и ламинированная столешница. Дополнительные модули и нестандартные размеры влияют на итог.',
-      separate:'Техника, мойка, смеситель, фартук, подсветка, пеналы, остров, доставка, подъём и монтаж.',
-      variants:[
-        {title:'Фасады из ЛДСП', label:'Гладкие фасады', description:'Фасады без фрезеровки, петли, ручки и полки.', profile:'kitchens-series-03', metres:3},
-        {title:'Фасады из МДФ', label:'Матовая отделка', description:'Гладкие фасады из МДФ, полки, петли и один базовый выдвижной ящик.', profile:'kitchen-clay-peninsula', metres:3}
+      label: 'Кухня',
+      title: 'Прямая кухня длиной 3 м',
+      image: 'category-kitchens',
+      alt: 'Прямая кухня со светлыми фасадами и деревянными пеналами',
+      shared: 'В обеих сметах верхние и нижние шкафы, корпуса из ЛДСП, полки и ламинированная столешница.',
+      separate: 'технику, мойку, смеситель, фартук, подсветку, пеналы, остров, доставку, подъём и монтаж.',
+      variants: [
+        { title: 'Фасады из ЛДСП', description: 'Гладкие дверцы на петлях с ручками. Внутри полки.', profile: 'kitchens-series-03', metres: 3 },
+        { title: 'Фасады из МДФ', description: 'Гладкие дверцы на петлях. К полкам добавляем один ящик на направляющих.', profile: 'kitchen-clay-peninsula', metres: 3 }
       ]
     },
     wardrobes: {
-      label:'Шкаф', title:'Шкаф 2 × 2,4 × 0,6 м',
-      shared:'Пример с одинаковыми шириной, высотой и глубиной. В обоих вариантах предусмотрены корпус, полки и штанга.',
-      separate:'Дополнительные ящики и выдвижные системы, подсветка, доставка, подъём и монтаж.',
-      variants:[
-        {title:'Распашные двери', label:'Фасады из ЛДСП', description:'Распашные фасады, петли и ручки. При расчёте важно оставить место для открывания.', profile:'wardrobe-wall'},
-        {title:'Раздвижные двери', label:'Одна створка с зеркалом', description:'Две створки на направляющих. В этом примере на одной из створок предусмотрено зеркало.', profile:'wardrobe-sliding'}
+      label: 'Шкаф',
+      title: 'Шкаф 2 × 2,4 × 0,6 м',
+      image: 'model-wardrobe-wall-design',
+      alt: 'Встроенный шкаф со светлыми гладкими фасадами',
+      shared: 'Размеры, корпус, полки и штанга одинаковые. Отличаются двери и способ открывания.',
+      separate: 'дополнительные ящики, выдвижные системы, подсветку, доставку, подъём и монтаж.',
+      variants: [
+        { title: 'Распашные двери', description: 'Фасады из ЛДСП с петлями и ручками. Перед шкафом нужно место для открывания.', profile: 'wardrobe-wall' },
+        { title: 'Раздвижные двери', description: 'Две створки двигаются вдоль шкафа по направляющим. На одной створке зеркало.', profile: 'wardrobe-sliding' }
       ]
     },
     dressing: {
-      label:'Гардеробная', title:'Закрытая гардеробная шириной 2 м',
-      shared:'Один ряд хранения высотой 2,4 м. В обоих вариантах предусмотрены корпуса, полки и штанга.',
-      separate:'Дополнительные ящики и аксессуары, остров, подсветка, отделка помещения, доставка, подъём и монтаж.',
-      variants:[
-        {title:'Распашные фасады', label:'Базовое закрытое хранение', description:'Глухие дверцы на петлях закрывают отделения с одеждой.', profile:'dressing-series-12'},
-        {title:'Дверцы с остеклением', label:'Матовое стекло', description:'Дверцы из матового стекла. Стоимость зависит от типа стекла, профиля и механизма.', profile:'dressing-series-02'}
+      label: 'Гардеробная',
+      title: 'Закрытая гардеробная шириной 2 м',
+      image: 'model-dressing-series-12-design',
+      alt: 'Гардеробная с полками, штангами и секциями за дверцами',
+      shared: 'В обеих сметах один ряд шкафов высотой 2,4 м, корпуса, полки и штанга.',
+      separate: 'дополнительные ящики и аксессуары, остров, подсветку, отделку помещения, доставку, подъём и монтаж.',
+      variants: [
+        { title: 'Сплошные дверцы', description: 'Глухие фасады на петлях закрывают отделения с одеждой.', profile: 'dressing-series-12' },
+        { title: 'Дверцы из матового стекла', description: 'Матовые стеклянные фасады в профиле. Цена зависит от стекла и механизма открывания.', profile: 'dressing-series-02' }
       ]
     }
   };
@@ -122,22 +131,55 @@
   function budgetPanel(category) {
     const budget = budgets[category];
     const prices = window.YargaCatalogPricing;
+    const image = wire() ? 'assets/work-placeholder.svg' : `assets/${budget.image}.webp`;
     const cards = budget.variants.map(variant => {
       const unit = prices?.[variant.profile]?.amount;
       const amount = Number.isFinite(unit) ? rubles.format(unit * (variant.metres ?? 1)) : '';
-      return `<article class="budget-option"><p class="eyebrow">${esc(variant.label)}</p><h4>${esc(variant.title)}</h4>${amount ? `<p class="budget-amount">${amount}</p>` : ''}<p>${esc(variant.description)}</p><button class="text-button" type="button" data-fast-inquiry data-fast-category="${category}" data-fast-detail="${esc(`${budget.title}, ${variant.title}`)}">Рассчитать по моим размерам <span aria-hidden="true">↗</span></button></article>`;
+      return `<article class="budget-option">
+        <h4>${esc(variant.title)}</h4>
+        <p>${esc(variant.description)}</p>
+        ${amount ? `<p class="budget-amount">Около ${amount}</p>` : ''}
+      </article>`;
     });
-    return `<div class="budget-basis"><h3>${esc(budget.title)}</h3><p>${esc(budget.shared)}</p></div><div class="budget-grid">${cards.join('')}</div><p class="budget-exclusions"><strong>Считается отдельно.</strong> ${esc(budget.separate)}</p>`;
+    return `<div class="budget-example">
+      <figure class="budget-visual">
+        <img src="${image}" alt="${esc(budget.alt)}" loading="lazy" decoding="async" width="1250" height="938">
+        <figcaption>Визуализация. Отделка и детали зависят от комплектации.</figcaption>
+      </figure>
+      <div class="budget-basis">
+        <h3>${esc(budget.title)}</h3>
+        <p>${esc(budget.shared)}</p>
+        <div class="budget-grid">${cards.join('')}</div>
+        <p class="budget-exclusions"><strong>Отдельно считаем</strong> ${esc(budget.separate)}</p>
+      </div>
+    </div>
+    <div class="budget-request">
+      <button class="button button-primary" type="button" data-fast-inquiry data-fast-purpose="two-estimates" data-fast-category="${category}">Получить две сметы <span aria-hidden="true">↗</span></button>
+      <div class="budget-request-existing">
+        <h3>Уже есть смета?</h3>
+        <p>Пришлите её. Посмотрим, какие материалы и фурнитуру заложили, что посчитали отдельно и какие есть варианты.</p>
+        <button class="text-button" type="button" data-fast-inquiry data-fast-purpose="compare-estimate" data-fast-category="${category}">Прислать смету на сравнение <span aria-hidden="true">↗</span></button>
+      </div>
+    </div>`;
   }
 
   function addBudget(section, category) {
     section.className = 'section budget-section';
-    section.setAttribute('aria-labelledby','budget-title');
-    section.innerHTML = `<div class="container"><div class="section-heading"><div><h2 id="budget-title">Примеры расчёта</h2></div><p class="section-intro">Сравните, сколько стоят две комплектации мебели одного размера. Итоговую цену посчитаем по вашим размерам и материалам.</p></div><div class="budget-tabs" aria-label="Выбрать пример расчёта">${Object.entries(budgets).map(([key,value])=>`<button type="button" data-budget="${key}" aria-controls="budget-panel" aria-pressed="${key===category}">${value.label}</button>`).join('')}</div><div id="budget-panel" aria-live="polite">${budgetPanel(category)}</div></div>`;
-    section.addEventListener('click',event => {
+    section.setAttribute('aria-labelledby', 'budget-title');
+    section.innerHTML = `<div class="container">
+      <div class="budget-intro">
+        <h2 id="budget-title">Подготовим две сметы на вашу мебель</h2>
+        <p>Пришлите фото, эскиз или примерные размеры. Сравним материалы и фурнитуру для одной планировки и объясним, что входит в каждый расчёт.</p>
+      </div>
+      <div class="budget-tabs" aria-label="Выбрать мебель для сравнения">
+        ${Object.entries(budgets).map(([key, value]) => `<button type="button" data-budget="${key}" aria-controls="budget-panel" aria-pressed="${key === category}">${value.label}</button>`).join('')}
+      </div>
+      <div id="budget-panel">${budgetPanel(category)}</div>
+    </div>`;
+    section.addEventListener('click', event => {
       const button = event.target.closest('[data-budget]');
       if (!button || button.getAttribute('aria-pressed') === 'true') return;
-      section.querySelectorAll('[data-budget]').forEach(tab => tab.setAttribute('aria-pressed',String(tab === button)));
+      section.querySelectorAll('[data-budget]').forEach(tab => tab.setAttribute('aria-pressed', String(tab === button)));
       section.querySelector('#budget-panel').innerHTML = budgetPanel(button.dataset.budget);
     });
   }
@@ -147,7 +189,7 @@
     section.setAttribute('aria-labelledby','order-title');
     section.innerHTML = `<div class="section-heading"><div><h2 id="order-title">Как проходит заказ</h2></div></div><div class="order-grid">
       <article><h3>Фото и размеры</h3><p>Пришлите фото помещения, эскиз или ссылку. Обсудим планировку, материалы и ориентир по цене.</p></article>
-      <article><h3>Проект и смета</h3><p>Согласуем состав бесплатного дизайн-проекта и удобное время замера. После уточнения размеров подготовим смету на выбранную комплектацию.</p></article>
+      <article><h3>Проект и смета</h3><p>Согласуем состав бесплатного дизайн-проекта и удобное время замера. После уточнения размеров подготовим две сметы и объясним, чем они отличаются.</p></article>
       <article><h3>Договор и производство</h3><p>Фиксируем состав мебели, стоимость, сроки и этапы оплаты. Изготавливаем мебель в Воронеже.</p><a href="payment.html">Как устроена оплата</a></article>
       <article><h3>Установка и приёмка</h3><p>Согласуем доставку, подъём и монтаж по Москве и Московской области. Условия гарантии фиксируем в договоре.</p><a href="delivery.html">Доставка и монтаж</a></article>
     </div><div class="order-actions"><button type="button" class="button button-primary" data-fast-inquiry>Рассчитать по фото <span aria-hidden="true">↗</span></button><button type="button" class="button button-outline" data-form="measure">Бесплатный замер <span aria-hidden="true">↗</span></button></div>`;
@@ -164,7 +206,7 @@
     const gallery = project.photos.map(([id,alt],index) => `<figure class="work-photo${index===0?' work-photo-main':''}"><button type="button" data-project-photo="${index}" aria-label="Увеличить фото ${esc(alt)}"><img src="${asset(id)}" alt="${esc(alt)}" ${index===0?'fetchpriority="high"':'loading="lazy"'} decoding="async" width="1000" height="750"></button><figcaption>${esc(alt)}</figcaption></figure>`).join('');
     const inquiry = `<button type="button" class="button button-primary" data-fast-inquiry data-fast-category="${project.category}" data-fast-case="${project.id}" data-fast-case-title="${esc(project.title)}">Рассчитать похожую мебель <span aria-hidden="true">↗</span></button>`;
     const catalogLink = `catalog.html?category=${project.category}`;
-    const more = project.category === 'business' ? ['business.html','Мебель для бизнеса'] : Object.hasOwn(budgets,project.category) ? [catalogLink+'#estimate','Каталог и пример сметы'] : [catalogLink,'Смотреть модели'];
+    const more = project.category === 'business' ? ['business.html','Мебель для бизнеса'] : Object.hasOwn(budgets,project.category) ? [catalogLink+'#estimate','Сравнить варианты сметы'] : [catalogLink,'Смотреть модели'];
     main.innerHTML = `<section class="container work-page-intro"><nav aria-label="Хлебные крошки"><a href="index.html">Главная</a><span> / </span><a href="projects.html">Работы Ярги</a></nav><p class="eyebrow">${project.label}</p><h1>${esc(project.title)}</h1><p>${esc(project.lead)}</p>${inquiry}</section><section class="container work-page-content" aria-label="Фотографии и детали проекта"><div class="work-photo-grid">${gallery}</div><div class="work-page-details"><h2>Как устроена мебель</h2><dl>${project.facts.map(([key,value])=>`<div><dt>${esc(key)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl><p>${esc(project.details)}</p>${inquiry}<a href="${more[0]}" class="text-button">${more[1]} <span aria-hidden="true">↗</span></a></div></section>`;
     main.addEventListener('click',event => {
       const button = event.target.closest('[data-project-photo]');

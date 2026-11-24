@@ -26,19 +26,29 @@
 .work-related:hover { border-color: var(--red); }
 
 .budget-section { background: var(--soft); }
-.budget-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 23px; }
+.budget-intro { max-width: 980px; margin-bottom: 26px; }
+.budget-intro h2 { text-wrap: balance; }
+.budget-intro p { max-width: 660px; margin: 14px 0 0; color: var(--muted); }
+.budget-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
 .budget-tabs button { border: 1px solid var(--line); padding: 9px 16px; min-height: 41px; background: var(--paper); color: var(--ink); }
 .budget-tabs button[aria-pressed="true"] { background: var(--red); color: #fff; border-color: var(--red); }
-.budget-basis h3 { font-size: clamp(24px,3vw,38px); line-height: 1.15; margin: 0; }
-.budget-basis p { color: var(--muted); max-width: 720px; margin: 9px 0 21px; }
-.budget-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
-.budget-option { padding: clamp(18px,3vw,34px); background: var(--paper); border-top: 3px solid var(--line); }
-.budget-option:nth-child(2) { border-top-color: var(--red); }
-.budget-option h4 { font-size: 24px; line-height: 1.2; margin: 7px 0; }
-.budget-option .budget-amount { font-size: clamp(25px,3.4vw,44px); line-height: 1.15; font-variant-numeric: tabular-nums; margin: 7px 0; color: var(--ink); }
-.budget-option p:not(.eyebrow,.budget-amount) { color: var(--muted); min-height: 44px; font-size: 14px; margin: 10px 0; }
-.budget-option .text-button { text-align: left; }
-.budget-exclusions { color: var(--muted); font-size: 13px; margin: 17px 0 0; }
+.budget-example { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(20px, 3vw, 44px); align-items: start; }
+.budget-visual { margin: 0; }
+.budget-visual img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; background: var(--line); }
+.budget-visual figcaption { color: var(--muted); font-size: 12px; line-height: 1.45; margin-top: 8px; }
+.budget-basis h3 { font-size: clamp(24px, 2.6vw, 36px); line-height: 1.15; margin: 0; }
+.budget-basis p { color: var(--muted); margin: 10px 0 16px; }
+.budget-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.budget-option { display: flex; flex-direction: column; min-width: 0; padding: clamp(16px, 2vw, 25px); background: var(--paper); border: 1px solid var(--line); }
+.budget-option h4 { font-size: clamp(18px, 1.7vw, 24px); line-height: 1.2; margin: 0; }
+.budget-option p { font-size: 14px; line-height: 1.55; margin: 8px 0 15px; }
+.budget-option .budget-amount { font-size: clamp(17px, 1.9vw, 26px); line-height: 1.2; font-variant-numeric: tabular-nums; margin: auto 0 0; color: var(--ink); }
+.budget-basis .budget-exclusions { font-size: 13px; margin: 12px 0 0; }
+.budget-request { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 20px clamp(24px, 5vw, 68px); border-top: 1px solid var(--line); margin-top: 24px; padding-top: 24px; }
+.budget-request-existing { flex: 1 1 340px; max-width: 570px; }
+.budget-request h3 { font-size: 20px; }
+.budget-request p { font-size: 14px; color: var(--muted); margin: 5px 0; }
+.budget-request .text-button { text-align: left; }
 
 .order-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 21px; margin-bottom: 26px; }
 .order-grid article { border-top: 1px solid var(--red); padding-top: 15px; }
@@ -70,6 +80,8 @@
 .reviews-grid .review-card .review-content { flex: 1; }
 
 @media (max-width: 960px) {
+  .budget-example { grid-template-columns: minmax(0, 1fr); }
+  .budget-visual { max-width: 520px; }
   .order-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
 @media (max-width: 700px) {
@@ -78,12 +90,15 @@
   .work-grid { grid-template-columns: minmax(0,1fr); gap: 18px; }
   .work-grid-single > .work-preview { display: block; }
   .work-preview-copy, .work-grid-single .work-preview-copy { padding: 18px; }
-  .budget-grid, .work-page-content { grid-template-columns: minmax(0,1fr); }
-  .budget-option p:not(.eyebrow,.budget-amount) { min-height: 0; }
+  .work-page-content { grid-template-columns: minmax(0,1fr); }
   .work-page-intro .button, .work-page-details .button { max-width: 100%; height: auto; }
   .order-grid { gap: 16px 12px; }
   .order-grid h3 { font-size: 18px; }
   .order-grid p { font-size: 13px; }
+}
+@media (max-width: 490px) {
+  .budget-grid { grid-template-columns: minmax(0, 1fr); }
+  .budget-request > .button { width: 100%; }
 }
 @media (max-width: 360px) {
   .hero h1 { font-size: 32px; }

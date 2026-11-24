@@ -9,19 +9,38 @@
     business: 'Мебель для бизнеса'
   };
 
+  const inquiryCopy = {
+    estimate: {
+      title: 'Предварительный расчёт мебели',
+      description: 'Пришлите в чат фото, эскиз, план или ссылку на понравившуюся мебель. Если знаете примерные размеры, укажите их в сообщении.',
+      opening: 'Хочу получить предварительный расчёт мебели.'
+    },
+    'two-estimates': {
+      title: 'Две сметы на вашу мебель',
+      description: 'Выберите мессенджер и пришлите фото, эскиз или примерные размеры. По ним обсудим ваш проект и посчитаем две комплектации.',
+      opening: 'Хочу получить две сметы на один проект и сравнить материалы, фурнитуру и стоимость.'
+    },
+    'compare-estimate': {
+      title: 'Сравнение смет',
+      description: 'Прикрепите готовую смету в чате. Если есть фото, эскиз или план с размерами, пришлите и его. Посмотрим, что включено в расчёт и какие варианты можно предложить.',
+      opening: 'У меня уже есть расчёт мебели. Хочу сравнить комплектацию и узнать, какие варианты вы можете предложить.'
+    }
+  };
+
   let dialog;
   let opener;
   let inquiry;
 
   function requestDetails(trigger) {
-    const {fastModel, fastCategory, fastCase, fastCaseTitle, fastDetail} = trigger.dataset;
+    const {fastModel, fastCategory, fastCase, fastCaseTitle, fastDetail, fastPurpose} = trigger.dataset;
     const catalog = window.YargaCatalogData;
     const model = catalog?.solutions?.find(item => item.id === fastModel);
     const categoryId = model?.category ?? fastCategory;
     const categoryName = Object.hasOwn(categoryNames, categoryId) ? categoryNames[categoryId] : '';
     const modelName = [model?.code, model?.name].filter(Boolean).join(' · ');
     const caseName = fastCaseTitle || fastCase;
-    const draft = ['Здравствуйте! Хочу получить предварительный расчёт мебели.'];
+    const details = Object.hasOwn(inquiryCopy, fastPurpose) ? inquiryCopy[fastPurpose] : inquiryCopy.estimate;
+    const draft = [`Здравствуйте! ${details.opening}`];
 
     if (categoryName) draft.push(`Раздел — ${categoryName}`);
     if (modelName) draft.push(`Модель — ${modelName}${model.code ? '' : ` (${model.id})`}`);
@@ -34,6 +53,8 @@
       model: model?.id || fastModel || '',
       caseId: fastCase || '',
       summary: [modelName, caseName, fastDetail].filter(Boolean).join(' · ') || categoryName,
+      title: details.title,
+      description: details.description,
       draft: draft.join('\n')
     };
   }
@@ -51,9 +72,9 @@
     modal.setAttribute('aria-describedby', 'fast-inquiry-description');
     modal.innerHTML = `
       <button class="dialog-close" type="button" data-fast-close aria-label="Закрыть окно">×</button>
-      <h2 id="fast-inquiry-title" tabindex="-1">Предварительный расчёт мебели</h2>
+      <h2 id="fast-inquiry-title" tabindex="-1"></h2>
       <p class="fast-inquiry-selection" data-fast-selection hidden></p>
-      <p class="dialog-description" id="fast-inquiry-description">Пришлите в чат фото, эскиз, план или ссылку на понравившуюся мебель. Если знаете примерные размеры, укажите их в сообщении.</p>
+      <p class="dialog-description" id="fast-inquiry-description"></p>
       <div class="fast-inquiry-actions">
         <a class="button button-primary" data-fast-telegram target="_blank" rel="noopener noreferrer">Написать в Telegram <span aria-hidden="true">↗</span></a>
         <a class="button button-outline" data-fast-max target="_blank" rel="noopener noreferrer">Написать в MAX <span aria-hidden="true">↗</span></a>
@@ -111,7 +132,10 @@
     opener = trigger;
 
     inquiry = requestDetails(trigger);
-    const {summary, draft} = inquiry;
+    const {summary, draft, title, description} = inquiry;
+    const heading = dialog.querySelector('#fast-inquiry-title');
+    heading.textContent = title;
+    dialog.querySelector('#fast-inquiry-description').textContent = description;
     const selection = dialog.querySelector('[data-fast-selection]');
     selection.textContent = summary;
     selection.hidden = !summary;
@@ -123,7 +147,7 @@
 
     dialog.showModal();
     document.body.classList.add('locked');
-    dialog.querySelector('h2').focus({preventScroll: true});
+    heading.focus({preventScroll: true});
     reportAction('fast_open');
   });
 })();
