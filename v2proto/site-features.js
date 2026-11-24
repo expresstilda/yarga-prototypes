@@ -49,7 +49,7 @@
         <figcaption>${esc(photo.alt)}</figcaption>
       </figure>`).join('')}
     </div>
-    <div class="container installations-footer"><a class="text-button" href="projects.html">Посмотреть проекты с описанием <span aria-hidden="true">↗</span></a> <button type="button" class="text-button" data-design-offer>Получить бесплатный дизайн-проект <span aria-hidden="true">↗</span></button></div>`;
+    <div class="container installations-footer"><a class="text-button" href="projects.html">Посмотреть проекты с описанием <span aria-hidden="true">↗</span></a></div>`;
     const track = section.querySelector('.installations-track');
     const frames = [...track.children];
     const pauseButton = section.querySelector('[data-installation-pause]');
@@ -119,6 +119,11 @@
   }
 
   function addOffer(page) {
+    const partnerPage = page === 'business' || page === 'designers';
+    const startDesign = () => {
+      if (partnerPage) window.YargaContact.open(page === 'designers' ? 'designer' : page, true);
+      else window.YargaQuiz.open(photos[page] ? page : undefined, undefined, 'design');
+    };
     const [title, description, picture] = offers[page] || offers.catalog;
     const dialog = document.createElement('dialog');
     dialog.id = 'design-offer';
@@ -128,7 +133,7 @@
     dialog.innerHTML = `<button type="button" class="dialog-close" data-offer-close aria-label="Закрыть предложение">×</button>
       <div class="design-offer-image"><img src="${wire() ? 'assets/work-placeholder.svg' : `assets/category-${picture}.webp`}" alt="" width="640" height="800" decoding="async" loading="lazy"></div>
       <div class="design-offer-copy"><span class="design-offer-brand">ЯРГА</span><h2 id="design-offer-title" tabindex="-1">${title}</h2><p>${description}</p>
-      <button type="button" class="button button-primary" data-offer-start>Получить дизайн-проект <span aria-hidden="true">↗</span></button>
+      <button type="button" class="button button-primary" data-offer-start>${partnerPage ? 'Заполнить заявку' : 'Ответить на вопросы'} <span aria-hidden="true">↗</span></button>
       <button type="button" class="design-offer-dismiss" data-offer-close>Закрыть</button></div>`;
     document.getElementById('overlays').append(dialog);
     let engaged = false;
@@ -137,16 +142,16 @@
     let previousFocus;
     try{ legacySeen=Object.keys(sessionStorage).some(key=>key.startsWith('yarga-design-seen:') && sessionStorage.getItem(key)==='1'); }catch{}
     const interacted = () => engaged || !!document.querySelector('dialog[open], .site-header.menu-open');
-    const show = manual => {
+    const show = () => {
       if (dialog.open || document.querySelector('dialog[open]')) return;
-      if(!manual && (shownOnPage || legacySeen || interacted() || document.hidden || !document.hasFocus()))return;
+      if(shownOnPage || legacySeen || interacted() || document.hidden || !document.hasFocus())return;
       const now=Date.now();
       const history=offerHistory(now);
-      if(!manual && (history.count>=offerLimit || (history.last>0 && now-history.last<offerCooldown)))return;
+      if(history.count>=offerLimit || (history.last>0 && now-history.last<offerCooldown))return;
       previousFocus = document.activeElement;
       dialog.showModal();
       shownOnPage=true;
-      rememberOffer(history,now,manual);
+      rememberOffer(history,now,false);
       document.body.classList.add('locked');
       dialog.querySelector('h2').focus();
     };
@@ -157,20 +162,25 @@
       if (event.target.closest('[data-offer-close]') || event.target === dialog) dialog.close();
       if (!event.target.closest('[data-offer-start]')) return;
       dialog.close();
-      if (page === 'business' || page === 'designers') window.YargaContact.open(page === 'designers' ? 'designer' : page, true);
-      else window.YargaQuiz.open(photos[page] ? page : undefined, undefined, 'design');
+      startDesign();
     });
     document.addEventListener('click',event => {
-      if (event.target.closest('[data-design-offer]')) show(true);
+      if (event.target.closest('[data-design-start]')) {
+        engaged = true;
+        const now = Date.now();
+        rememberOffer(offerHistory(now), now, true);
+        startDesign();
+        return;
+      }
       if (event.target.closest('[data-form], [data-quiz], [data-solution-quote], [data-fast-inquiry], a[href^="tel:"], a[href*="t.me/"], a[href*="max.ru/"]')) engaged = true;
     });
     const started = performance.now();
     const timer = setInterval(() => {
       if (shownOnPage || legacySeen || engaged) { clearInterval(timer); return; }
-      if (performance.now() - started >= 22000 && scrollY >= Math.min(500, innerHeight * .55)) show(false);
+      if (performance.now() - started >= 22000 && scrollY >= Math.min(500, innerHeight * .55)) show();
     }, 1000);
     document.addEventListener('mouseout',event => {
-      if (matchMedia('(pointer:fine)').matches && !event.relatedTarget && event.clientY <= 0 && performance.now() - started >= 14000) show(false);
+      if (matchMedia('(pointer:fine)').matches && !event.relatedTarget && event.clientY <= 0 && performance.now() - started >= 14000) show();
     });
   }
 
