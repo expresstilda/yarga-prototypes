@@ -1,19 +1,26 @@
 .lead-form { margin: 16px 0 0; }
-.lead-fields { display: grid; gap: 12px; }
-.lead-form .lead-fields label { display: grid; gap: 4px; margin: 0; color: var(--ink); font-size: 13px; }
-.lead-fields input:not([type=checkbox]), .lead-form textarea { width: 100%; min-width: 0; margin: 0; font-size: 16px; }
+.lead-fields { display: grid; gap: 12px; min-width: 0; }
+.lead-form .lead-fields label { display: block; margin: 0; color: var(--ink); font-size: 13px; }
+.lead-fields small { color: var(--muted); font-size: 12px; }
+.lead-fields input:not([type=checkbox]), .lead-fields textarea { display: block; width: 100%; min-width: 0; margin: 4px 0 0; font-size: 16px; }
+.lead-fields textarea { resize: vertical; }
+.lead-fields input[type=file] { min-width: 0; border: 1px solid var(--line, #c8c6c0); padding: 8px; font-size: 13px; cursor: pointer; }
+.lead-fields input::file-selector-button { margin-right: 10px; border: 0; background: var(--soft); color: var(--ink); padding: 7px 9px; cursor: pointer; }
+.lead-attachments { min-width: 0; margin-top: -5px; font-size: 12px; }
+.lead-attachments ul { margin: 0; padding-inline-start: 18px; overflow-wrap: anywhere; }
+.lead-attachments .text-button { margin: 4px 0 0; padding: 2px 0; }
 .lead-consent { margin: 16px 0; font-size: 12px; line-height: 1.5; }
 .lead-form .lead-consent label { display: grid; grid-template-columns: 18px minmax(0, 1fr); align-items: start; gap: 8px; margin: 0; color: var(--ink); cursor: pointer; }
 .lead-consent input[type=checkbox] { width: 18px; height: 18px; min-height: 0; margin: 0; accent-color: var(--red); }
-.lead-consent a, .lead-note a { text-decoration: underline; text-underline-offset: 2px; }
+.lead-consent a, .lead-chat a { text-decoration: underline; text-underline-offset: 2px; }
 .lead-consent .lead-policy { display: inline-block; margin: 4px 0 0 26px; color: var(--muted); }
-.lead-actions { display: grid; justify-items: start; gap: 8px; }
-.lead-actions .button, .lead-chat .button { min-height: 44px; max-width: 100%; padding: 10px 14px; }
-.lead-actions .text-button { text-align: left; }
-.lead-note { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
-.lead-note:empty { display: none; }
-.lead-chat { margin-top: 11px; }
-.lead-form label[data-lead-fallback]:not([hidden]) { display: grid; gap: 4px; font-size: 12px; }
+.lead-form .lead-submit { justify-content: center; width: 100%; min-height: 44px; padding: 10px 14px; }
+.lead-note, .lead-chat { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.lead-chat { margin-top: 16px; }
+.lead-chat a { color: var(--ink); white-space: nowrap; }
+.lead-preview { padding: 16px; background: var(--soft); color: var(--ink); }
+.lead-preview strong { display: block; margin-bottom: 4px; }
+.lead-preview p { margin: 0; }
 .lead-form [hidden] { display: none; }
 .privacy-content { max-width: 780px; }
 .privacy-content h1 { font-size: clamp(32px, 5vw, 58px); line-height: 1.05; margin: 0 0 20px; }

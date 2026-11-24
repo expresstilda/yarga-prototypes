@@ -79,7 +79,10 @@
       dialog.querySelectorAll('[data-size]').forEach(x=>values[x.dataset.size]=x.value);state.answers.size=values;
     }
     if(step.type==='text')state.answers.description=dialog.querySelector('[name=description]')?.value||'';
-    if(step.type==='contact')dialog.querySelectorAll('[data-lead-contact]').forEach(field=>{state.contact[field.name]=field.value;});
+    if(step.type==='contact' && !state.previewed){
+      const {name, phone, comment, attachments, consent}=dialog.querySelector('[data-lead-form]').elements;
+      state.contact={name:name.value,phone:phone.value,comment:comment.value,files:Array.from(attachments.files),consent:consent.checked};
+    }
   }
   function validStep(){
     const step=steps()[state.index], answer=state.answers[step.id];
@@ -109,17 +112,6 @@
       return `<div><dt>${esc(step.title)}</dt><dd>${esc(answerText(step))} <button type="button" data-quiz-edit="${i}" aria-label="Изменить: ${esc(step.title)}">Изменить</button></dd></div>`;
     }).join('')}</dl></div>`;
   }
-  function requestText(){
-    const request = state.purpose==='design' ? 'Хотелось бы заказать бесплатный дизайн-проект.' : 'Хотелось бы получить расчёт мебели.';
-    const model = state.model;
-    const lines = ['Здравствуйте! ' + request, 'Направление: ' + category()[1]];
-    if(model)lines.push('Модель: ' + [model.code, model.name].filter(Boolean).join(' · '));
-    for(const step of routes[state.category]){
-      const answer=answerText(step);
-      if(answer)lines.push(`${step.title} ${answer}`);
-    }
-    return lines.join('\n');
-  }
   function contactStep(){
     return `<div class="quiz-contact-layout"><div class="quiz-contact">
       <h3>Как с вами связаться</h3>
@@ -139,7 +131,15 @@
     const nextMarkup=step.type!=='contact'?`<button class="button button-primary" type="button" data-quiz-next>${state.editing?'Сохранить':'Далее'} <span aria-hidden="true">→</span></button>`:'';
     dialog.innerHTML=`<button class="dialog-close" type="button" data-quiz-close aria-label="Закрыть квиз">×</button><div class="quiz-sidebar"><a class="wordmark" href="index.html">ЯРГА<small>Мебель на заказ</small></a><h2>${state.purpose==='design'?'Дизайн-проект мебели':'Расчёт стоимости мебели'}</h2><p>Укажите, какую мебель хотите заказать, и ответьте на вопросы о размерах и материалах.</p></div><div class="quiz-body"><div class="quiz-progress-info"><span>${category()?esc(category()[1]):state.purpose==='design'?'Дизайн-проект':'Расчёт мебели'}</span><span>Шаг ${state.index+1} из ${list.length}</span></div><div class="quiz-progress" role="progressbar" aria-label="Прогресс квиза" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div><h2 id="quiz-title" tabindex="-1">${step.title}</h2><p class="quiz-hint">${step.hint||(step.type==='category'?'Выберите мебель, которую хотите заказать.':step.type==='contact'?'Проверьте ответы. Любой пункт можно изменить.':'Выберите один вариант.')}</p>${body}<div class="quiz-navigation">${backMarkup}${nextMarkup}</div></div>`;
     const form=dialog.querySelector('[data-lead-form]');
-    if(form)window.YargaLeadForm.bind(form,{subject:step.title,message:requestText});
+    if(form)window.YargaLeadForm.bind(form,{
+      files:state.contact.files,
+      onPreview:()=>{
+        state.contact={};
+        state.previewed=true;
+        dialog.querySelector('.quiz-navigation').remove();
+        dialog.querySelectorAll('[data-quiz-edit]').forEach(button=>button.remove());
+      }
+    });
     const next=dialog.querySelector('[data-quiz-next]');if(next)next.disabled=!validStep();
     dialog.scrollTop=0;dialog.querySelector('.quiz-body').scrollTop=0;
     if(dialog.open)dialog.querySelector('#quiz-title').focus();

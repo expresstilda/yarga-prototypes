@@ -12,18 +12,15 @@
   const inquiryCopy = {
     estimate: {
       title: 'Предварительный расчёт мебели',
-      description: 'Пришлите в чат фото, эскиз, план или ссылку на понравившуюся мебель. Если знаете примерные размеры, укажите их в сообщении.',
-      opening: 'Хочу получить предварительный расчёт мебели.'
+      description: 'Приложите фото, эскиз или план. Примерные размеры и ссылку на понравившуюся мебель можно указать в комментарии.'
     },
     'two-estimates': {
       title: 'Две сметы на вашу мебель',
-      description: 'Выберите мессенджер и пришлите фото, эскиз или примерные размеры. По ним обсудим ваш проект и посчитаем две комплектации.',
-      opening: 'Хочу получить две сметы на один проект и сравнить материалы, фурнитуру и стоимость.'
+      description: 'Приложите фото или эскиз, а в комментарии укажите примерные размеры. По этим данным обсудим проект и посчитаем две комплектации.'
     },
     'compare-estimate': {
       title: 'Сравнение смет',
-      description: 'Прикрепите готовую смету в чате. Если есть фото, эскиз или план с размерами, пришлите и его. Посмотрим, что включено в расчёт и какие варианты можно предложить.',
-      opening: 'У меня уже есть расчёт мебели. Хочу сравнить комплектацию и узнать, какие варианты вы можете предложить.'
+      description: 'Приложите смету к заявке. Можно добавить фото или план с размерами. Посмотрим, что входит в расчёт и какие варианты можем предложить.'
     }
   };
 
@@ -40,22 +37,13 @@
     const modelName = [model?.code, model?.name].filter(Boolean).join(' · ');
     const caseName = fastCaseTitle || fastCase;
     const details = Object.hasOwn(inquiryCopy, fastPurpose) ? inquiryCopy[fastPurpose] : inquiryCopy.estimate;
-    const draft = [`Здравствуйте! ${details.opening}`];
-
-    if (categoryName) draft.push(`Раздел — ${categoryName}`);
-    if (modelName) draft.push(`Модель — ${modelName}${model.code ? '' : ` (${model.id})`}`);
-    else if (fastModel) draft.push(`Код модели — ${fastModel}`);
-    if (caseName) draft.push(`Похожая работа — ${caseName}${fastCase && fastCase !== caseName ? ` (${fastCase})` : ''}`);
-    if (fastDetail) draft.push(`Для расчёта — ${fastDetail}`);
-
     return {
       category: categoryName ? categoryId : '',
       model: model?.id || fastModel || '',
       caseId: fastCase || '',
       summary: [modelName, caseName, fastDetail].filter(Boolean).join(' · ') || categoryName,
       title: details.title,
-      description: details.description,
-      draft: draft.join('\n')
+      description: details.description
     };
   }
 
@@ -106,7 +94,7 @@
     opener = trigger;
 
     inquiry = requestDetails(trigger);
-    const {summary, draft, title, description} = inquiry;
+    const {summary, title, description} = inquiry;
     const heading = dialog.querySelector('#fast-inquiry-title');
     heading.textContent = title;
     dialog.querySelector('#fast-inquiry-description').textContent = description;
@@ -115,7 +103,7 @@
     selection.hidden = !summary;
     const formHost = dialog.querySelector('[data-fast-form]');
     formHost.innerHTML = window.YargaLeadForm.markup();
-    window.YargaLeadForm.bind(formHost.querySelector('[data-lead-form]'), {subject: title, message: () => draft});
+    window.YargaLeadForm.bind(formHost.querySelector('[data-lead-form]'));
 
     dialog.showModal();
     document.body.classList.add('locked');

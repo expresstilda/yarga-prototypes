@@ -39,20 +39,19 @@ function createDialogs(){
 }
 function showDialog(id){closeMenus();const dialog=document.getElementById(id);dialog.showModal();document.body.classList.add('locked');}
 const formCopy = {
-  measure: ['Бесплатный замер', 'Напишите, где находится объект и что хотите изготовить. Согласуем время выезда.', 'Хочу договориться о бесплатном замере.'],
-  calculate: ['Расчёт стоимости мебели', 'Пришлите размеры или эскиз и расскажите, какие материалы рассматриваете.', 'Хочу узнать стоимость мебели.'],
-  consult: ['Вопрос о мебели', 'Расскажите, какая мебель нужна. Можно приложить фото помещения, размеры или эскиз.', 'У меня вопрос по заказу мебели.'],
-  business: ['Мебель для вашего объекта', 'Пришлите план помещения и расскажите о задачах, количестве изделий и сроках.', 'Хочу обсудить мебель для нашего объекта.'],
-  designer: ['Расчёт мебели по чертежам', 'Пришлите эскиз или техзадание. Обсудим материалы, конструкцию и сроки работы.', 'Хочу запросить расчёт мебели по чертежам.']
+  measure: ['Бесплатный замер', 'Укажите в комментарии, где находится объект и какая мебель нужна. Согласуем время выезда.'],
+  calculate: ['Расчёт стоимости мебели', 'Приложите эскиз или укажите размеры и материалы в комментарии.'],
+  consult: ['Вопрос о мебели', 'Напишите вопрос в комментарии. Если поможет, приложите фото помещения или эскиз.'],
+  business: ['Мебель для вашего объекта', 'Приложите план помещения и укажите в комментарии, какая мебель нужна, сколько изделий и к какому сроку.'],
+  designer: ['Расчёт мебели по чертежам', 'Приложите эскиз или техзадание к заявке. Обсудим материалы, конструкцию и сроки.']
 };
 function openForm(kind='consult', design=false){
   if(kind==='calculate' && window.YargaQuiz){window.YargaQuiz.open();return;}
-  const [defaultTitle,description,opening] = formCopy[kind] || formCopy.consult;
+  const [defaultTitle,description] = formCopy[kind] || formCopy.consult;
   const title = design ? 'Бесплатный дизайн-проект' : defaultTitle;
-  const message = design ? 'Здравствуйте! Хочу обсудить бесплатный дизайн-проект мебели.' : `Здравствуйте! ${opening}`;
   const content = document.getElementById('request-content');
   content.innerHTML = `<h2 id="dialog-title">${title}</h2><p class="dialog-description">${description}</p>${window.YargaLeadForm.markup()}`;
-  window.YargaLeadForm.bind(content.querySelector('[data-lead-form]'), {subject: title, message: () => message});
+  window.YargaLeadForm.bind(content.querySelector('[data-lead-form]'));
   showDialog('request-dialog');
 }
 window.YargaContact = {open:openForm, telegramUrl:telegram, maxUrl};

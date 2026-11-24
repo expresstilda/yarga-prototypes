@@ -1,35 +1,40 @@
 (() => {
   const consentPage = 'personal-data-consent.html';
-  const consentVersion = '24.11.2026';
-  const email = 'yarga4@yandex.ru';
+  const attachmentTypes = /\.(?:jpe?g|png|webp|heic|heif|pdf)$/i;
+  const maxFiles = 3;
+  const maxBytes = 10 * 1024 * 1024;
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   })[char]);
 
   function markup(contact = {}) {
-    return `<form class="lead-form" data-lead-form method="dialog">
-      <div class="lead-fields">
-        <label>Ваше имя<input data-lead-contact name="name" type="text" autocomplete="name" placeholder="Как к вам обращаться" maxlength="80" value="${esc(contact.name)}" required></label>
-        <label>Телефон<input data-lead-contact name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7 900 000-00-00" maxlength="32" value="${esc(contact.phone)}" required></label>
-      </div>
-      <div class="lead-consent">
-        <label><input type="checkbox" name="consent" required><span>Я даю <a href="${consentPage}" target="_blank" rel="noopener">согласие на обработку персональных данных</a> ООО «ЯРГА» для ответа на мою заявку.</span></label>
-        <a class="lead-policy" href="personal-data-policy.html" target="_blank" rel="noopener">Политика обработки персональных данных</a>
-      </div>
-      <div class="lead-actions">
-        <button class="button button-primary" type="submit" name="channel" value="email">Открыть заявку в почте <span aria-hidden="true">↗</span></button>
-        <button class="text-button" type="submit" name="channel" value="chat">Подготовить для Telegram или MAX</button>
-      </div>
-      <p class="lead-note">Отправьте готовую заявку в почтовом приложении или в чате.</p>
-      <p class="lead-note" data-lead-email-status hidden><a data-lead-email-link>Открыть письмо ещё раз</a></p>
-      <div class="lead-chat" data-lead-chat-ready hidden>
-        <label data-lead-fallback hidden>Текст заявки<textarea rows="4" readonly></textarea></label>
-        <div class="contact-actions">
-          <a class="button button-outline" data-lead-chat="telegram" target="_blank" rel="noopener noreferrer">Открыть Telegram <span aria-hidden="true">↗</span></a>
-          <a class="button button-outline" data-lead-chat="max" target="_blank" rel="noopener noreferrer">Открыть MAX <span aria-hidden="true">↗</span></a>
+    return `<form class="lead-form" data-lead-form method="dialog" enctype="multipart/form-data">
+      <div data-lead-fields>
+        <div class="lead-fields">
+          <label>Ваше имя<input name="name" type="text" autocomplete="name" placeholder="Как к вам обращаться" maxlength="80" value="${esc(contact.name)}" required></label>
+          <label>Телефон<input name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7 900 000-00-00" maxlength="32" value="${esc(contact.phone)}" required></label>
+          <label>Комментарий <small>необязательно</small><textarea name="comment" rows="2" maxlength="1500" placeholder="Например, размеры или ссылка на понравившуюся мебель">${esc(contact.comment)}</textarea></label>
+          <label>Фото или документы <small>необязательно</small>
+            <input name="attachments" type="file" multiple accept=".jpg,.jpeg,.png,.webp,.heic,.heif,.pdf">
+            <small>До 3 файлов JPG, PNG, WebP, HEIC или PDF. Общий размер — до 10 МБ.</small>
+          </label>
+          <div class="lead-attachments" data-lead-attachments hidden>
+            <ul aria-label="Выбранные файлы"></ul>
+            <button class="text-button" type="button" data-lead-clear>Убрать файлы</button>
+          </div>
         </div>
+        <div class="lead-consent">
+          <label><input type="checkbox" name="consent" ${contact.consent ? 'checked' : ''} required><span>Я даю <a href="${consentPage}" target="_blank" rel="noopener">согласие на обработку персональных данных</a> ООО «ЯРГА» для ответа на мою заявку.</span></label>
+          <a class="lead-policy" href="personal-data-policy.html" target="_blank" rel="noopener">Политика обработки персональных данных</a>
+        </div>
+        <button class="button button-primary lead-submit" type="submit">Отправить заявку</button>
+        <p class="lead-note">Демонстрация. Данные и файлы остаются в браузере.</p>
       </div>
-      <p class="lead-note" data-lead-chat-status role="status"></p>
+      <div class="lead-preview" data-lead-preview tabindex="-1" hidden>
+        <strong>Заявка готова</strong>
+        <p>В рабочей версии сайта она отправится в Яргу.</p>
+      </div>
+      <p class="lead-chat">Предпочитаете написать? <a data-lead-chat="telegram" target="_blank" rel="noopener noreferrer">Telegram</a> или <a data-lead-chat="max" target="_blank" rel="noopener noreferrer">MAX</a>.</p>
     </form>`;
   }
 
@@ -43,76 +48,67 @@
     return `+${digits}`;
   }
 
-  function bind(form, { subject, message }) {
-    const name = form.elements.namedItem('name');
-    const phone = form.elements.namedItem('phone');
-    const consent = form.elements.namedItem('consent');
-    const emailLink = form.querySelector('[data-lead-email-link]');
-    const emailStatus = form.querySelector('[data-lead-email-status]');
-    const chat = form.querySelector('[data-lead-chat-ready]');
-    const chatStatus = form.querySelector('[data-lead-chat-status]');
-    const fallback = form.querySelector('[data-lead-fallback]');
-    const draftInput = fallback.querySelector('textarea');
-    const links = window.YargaContact;
-    form.querySelector('[data-lead-chat="telegram"]').href = links.telegramUrl;
-    form.querySelector('[data-lead-chat="max"]').href = links.maxUrl;
-    let revision = 0;
+  function attachmentError(files) {
+    if (files.length > maxFiles) return 'Выберите не больше трёх файлов.';
+    if (files.some(file => !attachmentTypes.test(file.name))) return 'Выберите фото или PDF в одном из указанных форматов.';
+    if (files.some(file => file.size === 0)) return 'В списке есть пустой файл. Выберите другой файл.';
+    if (files.reduce((total, file) => total + file.size, 0) > maxBytes) return 'Общий размер файлов превышает 10 МБ.';
+    return '';
+  }
 
-    function clearPrepared() {
-      revision++;
-      emailStatus.hidden = chat.hidden = fallback.hidden = true;
-      emailLink.removeAttribute('href');
-      draftInput.value = '';
-      chatStatus.textContent = '';
+  function bind(form, {files = [], onPreview} = {}) {
+    const {name, phone, attachments} = form.elements;
+    const selection = form.querySelector('[data-lead-attachments]');
+    const list = selection.querySelector('ul');
+    const preview = form.querySelector('[data-lead-preview]');
+    form.querySelector('[data-lead-chat="telegram"]').href = window.YargaContact.telegramUrl;
+    form.querySelector('[data-lead-chat="max"]').href = window.YargaContact.maxUrl;
+
+    function updateAttachments() {
+      const chosen = Array.from(attachments.files);
+      attachments.setCustomValidity(attachmentError(chosen));
+      list.replaceChildren(...chosen.map(file => {
+        const item = document.createElement('li');
+        item.textContent = file.name;
+        return item;
+      }));
+      list.hidden = chosen.length < 2;
+      selection.hidden = chosen.length === 0;
     }
 
-    form.addEventListener('input', event => {
-      if (![name, phone, consent].includes(event.target)) return;
-      event.target.setCustomValidity('');
-      clearPrepared();
+    if (files.length) {
+      const transfer = new DataTransfer();
+      files.forEach(file => transfer.items.add(file));
+      attachments.files = transfer.files;
+      updateAttachments();
+    }
+
+    name.addEventListener('input', () => name.setCustomValidity(''));
+    phone.addEventListener('input', () => phone.setCustomValidity(''));
+    attachments.addEventListener('change', () => {
+      updateAttachments();
+      attachments.reportValidity();
+    });
+    form.querySelector('[data-lead-clear]').addEventListener('click', () => {
+      attachments.value = '';
+      updateAttachments();
+      attachments.focus();
     });
 
-    form.addEventListener('submit', async event => {
+    form.addEventListener('submit', event => {
       event.preventDefault();
       name.setCustomValidity(name.value.trim() ? '' : 'Введите ваше имя.');
-      const number = normalizePhone(phone.value);
-      phone.setCustomValidity(number ? '' : 'Введите телефон с кодом страны или 10 цифр российского номера.');
+      phone.setCustomValidity(normalizePhone(phone.value) ? '' : 'Введите телефон с кодом страны или 10 цифр российского номера.');
+      updateAttachments();
       if (!form.reportValidity()) return;
 
-      clearPrepared();
-      const current = revision;
-      const consentUrl = new URL(consentPage, location.href).href;
-      const body = [
-        message(),
-        `Имя — ${name.value.trim()}`,
-        `Телефон — ${number}`,
-        '',
-        `Даю согласие ООО «ЯРГА» на обработку персональных данных для ответа на заявку. Редакция от ${consentVersion}, ${consentUrl}. Отметка формы: ${new Date().toISOString()}.`
-      ].join('\n');
-
-      if (event.submitter?.value !== 'chat') {
-        emailLink.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        emailStatus.hidden = false;
-        emailLink.click();
-        return;
-      }
-
-      let copied = false;
-      try {
-        await navigator.clipboard.writeText(body);
-        copied = true;
-      } catch {}
-      if (current !== revision || !form.isConnected || !form.closest('dialog')?.open) return;
-      chat.hidden = false;
-      if (copied) {
-        chatStatus.textContent = 'Заявка скопирована. Откройте чат и вставьте текст.';
-      } else {
-        fallback.hidden = false;
-        draftInput.value = body;
-        draftInput.focus();
-        draftInput.select();
-        chatStatus.textContent = 'Скопируйте выделенный текст и вставьте его в чат.';
-      }
+      onPreview?.();
+      form.reset();
+      attachments.value = '';
+      updateAttachments();
+      form.querySelector('[data-lead-fields]').hidden = true;
+      preview.hidden = false;
+      preview.focus();
     });
   }
 
