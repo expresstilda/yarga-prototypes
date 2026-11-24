@@ -21,20 +21,16 @@
   const asset = photo => wire() ? 'assets/work-placeholder.svg' : `assets/installations/${photo.image}`;
   const esc = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[char]));
 
-  function getSelection(page) {
+  function getSelection() {
     const groups = Object.values(photos);
-    const mixed = Array.from({length:Math.max(...groups.map(group => group.length))}, (_, i) =>
+    return Array.from({length:Math.max(...groups.map(group => group.length))}, (_, i) =>
       groups.flatMap(group => group[i] ? [group[i]] : [])
     ).flat();
-    if (!photos[page]) return mixed;
-    const more = mixed.filter(photo => !photos[page].includes(photo));
-    return [...photos[page], ...more];
   }
 
-  function addInstallations(page) {
-    const section = document.getElementById('portfolio') ?? document.createElement('section');
-    const selection = getSelection(page);
-    section.id = 'portfolio';
+  function addInstallations() {
+    const section = document.getElementById('portfolio');
+    const selection = getSelection();
     section.className = 'section installations';
     section.setAttribute('aria-labelledby','installations-title');
     section.innerHTML = `<div class="container installations-head">
@@ -53,12 +49,7 @@
         <figcaption>${esc(photo.alt)}</figcaption>
       </figure>`).join('')}
     </div>
-    <div class="container installations-footer"><a class="text-button" href="projects.html">Посмотреть работы <span aria-hidden="true">↗</span></a> <button type="button" class="text-button" data-design-offer>Получить бесплатный дизайн-проект <span aria-hidden="true">↗</span></button></div>`;
-    if (!section.isConnected) {
-      const before = document.querySelector('#main #reviews, #main .catalog-faq');
-      if (before) before.before(section);
-      else document.getElementById('main').append(section);
-    }
+    <div class="container installations-footer"><a class="text-button" href="projects.html">Посмотреть проекты с описанием <span aria-hidden="true">↗</span></a> <button type="button" class="text-button" data-design-offer>Получить бесплатный дизайн-проект <span aria-hidden="true">↗</span></button></div>`;
     const track = section.querySelector('.installations-track');
     const frames = [...track.children];
     const pauseButton = section.querySelector('[data-installation-pause]');
@@ -192,7 +183,7 @@
     const page = document.body.dataset.page || 'home';
     const category = new URLSearchParams(location.search).get('category');
     const section = page === 'catalog' && Object.hasOwn(window.YargaCatalogData?.sections ?? {}, category) ? category : page;
-    addInstallations(section);
+    if (page === 'home') addInstallations();
     addOffer(section);
   });
 })();

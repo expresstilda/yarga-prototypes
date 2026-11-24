@@ -179,19 +179,21 @@
     const page = document.body.dataset.page || 'home';
     const main = document.getElementById('main');
     if (page === 'projects') {renderProjectPage(main); return;}
-    if (page === 'home' || page === 'catalog' || page === 'business') {
-      const category = page === 'catalog' ? new URLSearchParams(location.search).get('category') : page;
+    const category = page === 'catalog' ? new URLSearchParams(location.search).get('category') : page;
+    if (page === 'catalog' || page === 'business') {
       const priority = projects.filter(project => project.category === category);
-      const items = page === 'business' ? projects.filter(project=>project.category==='business') : priority.length ? priority : core;
-      const anchor = page === 'home' ? document.getElementById('approach') : page === 'catalog' ? document.querySelector('.catalog-quiz-banner') : null;
-      if (anchor) anchor.insertAdjacentHTML('beforebegin',workList(items,'Мебель на объектах Ярги'));
-      else main.insertAdjacentHTML('beforeend',workList(items,'Мебель на объектах Ярги'));
-      if (page === 'home' || (page === 'catalog' && (!category || Object.hasOwn(budgets,category)))) {
-        const section = document.createElement('section');
-        section.id = 'estimate';
-        addBudget(section,Object.hasOwn(budgets,category) ? category : 'kitchens');
-        document.getElementById('case-studies').after(section);
-      }
+      const anchor = page === 'catalog' ? document.querySelector('.catalog-quiz-banner') : null;
+      const heading = page === 'business' ? 'Наши работы в офисах' : 'Примеры выполненных работ';
+      const markup = workList(priority.length ? priority : core, heading);
+      if (anchor) anchor.insertAdjacentHTML('beforebegin',markup);
+      else main.insertAdjacentHTML('beforeend',markup);
+    }
+    if (page === 'home' || (page === 'catalog' && (!category || Object.hasOwn(budgets,category)))) {
+      const section = document.createElement('section');
+      section.id = 'estimate';
+      addBudget(section,Object.hasOwn(budgets,category) ? category : 'kitchens');
+      const anchor = document.getElementById(page === 'home' ? 'portfolio' : 'case-studies');
+      anchor.after(section);
     }
     const process = document.querySelector('[data-order-steps]');
     if (process) addProcess(process);
