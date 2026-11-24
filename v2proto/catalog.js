@@ -59,7 +59,7 @@
   }
   function quizBanner(){
     const s=sections[selected];
-    return `<section class="catalog-quiz-banner container"><div class="catalog-quiz-picture"><img src="${image(s?.image||'hero-kitchen.webp')}" alt="" loading="lazy" width="1448" height="1086"></div><div class="catalog-quiz-copy"><h2>Расчёт мебели по вашим размерам</h2><p>Ответьте на вопросы о размерах, планировке и материалах. В конце проверьте ответы и выберите, как отправить заявку.</p>${quiz()}<span class="catalog-quiz-time">Около 2 минут · Можно без точных размеров</span></div></section>`;
+    return `<section class="catalog-quiz-banner container"><div class="catalog-quiz-picture"><img src="${image(s?.image||'hero-kitchen.webp')}" alt="" loading="lazy" width="1448" height="1086"></div><div class="catalog-quiz-copy"><h2>Расчёт мебели по вашим размерам</h2><p>Ответьте на вопросы о размерах, планировке и материалах. В конце оставьте имя и телефон. При желании приложите фото или план.</p>${quiz()}<span class="catalog-quiz-time">Около 2 минут · Можно без точных размеров</span></div></section>`;
   }
   function approach(){
     return `<section class="catalog-approach container"><div class="catalog-section-heading"><div><h2>Как заказать мебель</h2></div><p>${sections[selected]?.note||'Можно заказать отдельную тумбу или мебель для нескольких комнат.'}</p></div><div class="catalog-steps">${[['Обсуждаем задачу','Пришлите фото, эскиз или модель из каталога, которая вам нравится.'],['Уточняем размеры','На замере проверяем размеры помещения и условия для установки.'],['Согласуем проект','Согласуем материалы, наполнение и стоимость до начала изготовления.'],['Изготавливаем и устанавливаем','Заранее согласуем доставку и монтаж. После установки вместе проверим мебель.']].map(([title,text],i)=>`<article><span>0${i+1}</span><h3>${title}</h3><p>${text}</p></article>`).join('')}</div></section>`;
@@ -118,6 +118,15 @@
   }
   function init(){
     if(document.body.dataset.page!=='catalog')return;
+    const directions = document.querySelector('.direction-nav');
+    const activeDirection = directions.querySelector('[aria-current="page"]');
+    if (activeDirection && directions.scrollWidth > directions.clientWidth) {
+      const nav = directions.getBoundingClientRect();
+      const link = activeDirection.getBoundingClientRect();
+      if (link.left < nav.left || link.right > nav.right) {
+        directions.scrollLeft += link.left - nav.left - (nav.width - link.width) / 2;
+      }
+    }
     refresh();
     document.addEventListener('change',event=>{
       const facet=event.target.closest('[data-catalog-facet]');if(facet){filters[facet.dataset.catalogFacet]=facet.value;refresh();}
@@ -130,7 +139,14 @@
         return;
       }
       const tag=event.target.closest('[data-catalog-tag]');if(tag){const field=tag.dataset.field;filters[field]=filters[field]===tag.dataset.catalogTag?'':tag.dataset.catalogTag;refresh();}
-      if(event.target.closest('[data-catalog-reset]')){filters={style:'',tone:'',type:''};refresh();}
+      const reset=event.target.closest('[data-catalog-reset]');
+      if(reset){
+        filters={style:'',tone:'',type:''};
+        refresh();
+        const firstFacet=document.querySelector('[data-catalog-facet]');
+        const focusTarget=firstFacet.getClientRects().length ? firstFacet : document.querySelector('.catalog-filter-toggle');
+        focusTarget.focus();
+      }
       const toggle=event.target.closest('.catalog-filter-toggle');if(toggle){const open=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(open));document.querySelector('.catalog-toolbar').classList.toggle('filters-open',open);}
       const card=event.target.closest('[data-solution]');if(card)openSolution(card.dataset.solution,card.hasAttribute('data-solution-price'));
       if(event.target.closest('[data-solution-close]'))detail.close();

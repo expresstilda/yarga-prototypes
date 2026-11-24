@@ -36,15 +36,14 @@
     section.innerHTML = `<div class="container installations-head">
       <div><h2 id="installations-title">Фото с последних объектов</h2><p>Кухни, шкафы и другая мебель Ярги после установки.</p></div>
       <div class="installations-controls" aria-label="Управление лентой">
-        <button type="button" class="round-button" data-installation-step="-1" aria-label="Предыдущие фотографии">←</button>
-        <button type="button" class="round-button" data-installation-pause aria-label="Остановить автоматическую прокрутку" aria-pressed="false">Ⅱ</button>
-        <button type="button" class="round-button" data-installation-step="1" aria-label="Следующие фотографии">→</button>
+        <button type="button" class="round-button" data-installation-step="-1" aria-controls="installation-track" aria-label="Предыдущие фотографии">←</button>
+        <button type="button" class="round-button" data-installation-step="1" aria-controls="installation-track" aria-label="Следующие фотографии">→</button>
       </div>
     </div>
-    <div class="installations-track" role="region" aria-label="Мебель на объектах" tabindex="0">${selection.map((photo,i) => `
+    <div id="installation-track" class="installations-track" role="region" aria-label="Мебель на объектах" tabindex="0">${selection.map((photo,i) => `
       <figure class="installation-frame${photo.portrait ? ' installation-portrait' : ''}">
         <button type="button" data-installation-index="${i}" aria-label="Открыть фото: ${esc(photo.alt)}">
-          <img src="${asset(photo)}" alt="${esc(photo.alt)}" loading="lazy" decoding="async" width="800" height="600">
+          <img src="${asset(photo)}" alt="${esc(photo.alt)}" loading="lazy" decoding="async" draggable="false" width="800" height="600">
         </button>
         <figcaption>${esc(photo.alt)}</figcaption>
       </figure>`).join('')}
@@ -52,38 +51,92 @@
     <div class="container installations-footer"><a class="text-button" href="projects.html">Посмотреть проекты с описанием <span aria-hidden="true">↗</span></a></div>`;
     const track = section.querySelector('.installations-track');
     const frames = [...track.children];
-    const pauseButton = section.querySelector('[data-installation-pause]');
-    let visible = false;
-    let paused = false;
     const move = direction => {
-      const start = frames[0].offsetLeft;
+      const current = track.scrollLeft;
       const end = track.scrollWidth - track.clientWidth;
+      const start = frames[0].offsetLeft;
       const offsets = frames.map(frame => frame.offsetLeft - start);
-      const left = direction > 0
-        ? (track.scrollLeft >= end - 2 ? 0 : offsets.find(offset => offset > track.scrollLeft + 3) ?? end)
-        : (track.scrollLeft <= 2 ? end : offsets.findLast(offset => offset < track.scrollLeft - 3) ?? 0);
-      track.scrollTo({left, behavior:reduced.matches ? 'instant' : 'smooth'});
+      const wrap = direction > 0 ? current >= end - 2 : current <= 2;
+      const left = wrap ? (direction > 0 ? 0 : end) : direction > 0
+        ? offsets.find(offset => offset > current + 3) ?? end
+        : offsets.findLast(offset => offset < current - 3) ?? 0;
+      track.scrollTo({left, behavior:reduced.matches || wrap ? 'instant' : 'smooth'});
     };
-    const updatePause = () => {
-      pauseButton.hidden = reduced.matches;
-      pauseButton.textContent = paused ? '▶' : 'Ⅱ';
-      pauseButton.setAttribute('aria-pressed',String(paused));
-      pauseButton.setAttribute('aria-label',paused ? 'Включить автоматическую прокрутку' : 'Остановить автоматическую прокрутку');
-    };
-    updatePause();
-    reduced.addEventListener('change',updatePause);
+
+    let visible = false;
+    let autoplay;
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (!visible || autoplay || reduced.matches) return;
+      const started = performance.now();
+      autoplay = setInterval(() => {
+        if (reduced.matches || performance.now() - started > 4300) {
+          stopAutoplay();
+          return;
+        }
+        if (visible && !document.hidden && !section.matches(':hover, :focus-within') && !document.querySelector('dialog[open]')) move(1);
+      }, 1250);
+    }, {threshold:.25});
+    function stopAutoplay() {
+      clearInterval(autoplay);
+      observer.disconnect();
+    }
+    observer.observe(section);
+
     section.addEventListener('click',event => {
       const step = event.target.closest('[data-installation-step]');
-      if (step) move(Number(step.dataset.installationStep));
-      if (event.target.closest('[data-installation-pause]')) { paused = !paused; updatePause(); }
+      if (step) {
+        stopAutoplay();
+        move(Number(step.dataset.installationStep));
+      }
       const photo = event.target.closest('[data-installation-index]');
       if (photo) window.YargaGallery.open(selection.map(item => ({src:asset(item),alt:item.alt})), Number(photo.dataset.installationIndex));
     });
-    track.addEventListener('pointerdown',() => { paused = true; updatePause(); });
-    new IntersectionObserver(entries => { visible = entries[0].isIntersecting; }, {threshold:.2}).observe(section);
-    setInterval(() => {
-      if (visible && !paused && !reduced.matches && !document.hidden && !section.matches(':hover, :focus-within') && !document.querySelector('dialog[open]')) move(1);
-    }, 2300);
+    track.addEventListener('keydown',event => {
+      if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+      event.preventDefault();
+      stopAutoplay();
+      move(event.key === 'ArrowRight' ? 1 : -1);
+    });
+    track.addEventListener('wheel',event => {
+      if (event.deltaX || event.shiftKey) stopAutoplay();
+    }, {passive:true});
+
+    let drag;
+    let suppressClick = false;
+    track.addEventListener('pointerdown',event => {
+      stopAutoplay();
+      suppressClick = false;
+      if (event.pointerType !== 'mouse' || event.button !== 0) return;
+      const left = track.scrollLeft;
+      track.scrollTo({left, behavior:'instant'});
+      drag = {id:event.pointerId, x:event.clientX, left};
+    });
+    window.addEventListener('pointermove',event => {
+      if (drag?.id !== event.pointerId) return;
+      const delta = event.clientX - drag.x;
+      if (!suppressClick) {
+        if (Math.abs(delta) < 7) return;
+        suppressClick = true;
+        track.classList.add('is-dragging');
+        track.setPointerCapture(event.pointerId);
+      }
+      event.preventDefault();
+      track.scrollLeft = drag.left - delta;
+    });
+    const finishDrag = event => {
+      if (drag?.id !== event.pointerId) return;
+      track.classList.remove('is-dragging');
+      drag = undefined;
+    };
+    window.addEventListener('pointerup',finishDrag);
+    window.addEventListener('pointercancel',finishDrag);
+    track.addEventListener('click',event => {
+      if (!suppressClick || event.detail === 0) return;
+      suppressClick = false;
+      event.preventDefault();
+      event.stopPropagation();
+    }, true);
   }
 
   const offerHistoryCookie = 'yarga_design_offer';

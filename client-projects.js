@@ -105,13 +105,15 @@
   const rubles = new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:0});
   const find = id => projects.find(project => project.id === id);
 
-  function preview(project) {
+  function preview(project, headingTag) {
     const [photo, alt] = project.photos[0];
-    return `<article class="work-preview"><a href="${url(project.id)}" class="work-preview-image" aria-label="Посмотреть проект ${esc(project.title)}"><img src="${asset(photo)}" alt="${esc(alt)}" loading="lazy" decoding="async" width="660" height="495"></a><div class="work-preview-copy"><p class="eyebrow">${project.label}</p><h3><a href="${url(project.id)}">${esc(project.title)}</a></h3><p>${esc(project.lead)}</p><a class="text-button" href="${url(project.id)}">Посмотреть работу <span aria-hidden="true">↗</span></a></div></article>`;
+    return `<article class="work-preview"><a href="${url(project.id)}" class="work-preview-image" aria-label="Посмотреть проект ${esc(project.title)}"><img src="${asset(photo)}" alt="${esc(alt)}" loading="lazy" decoding="async" width="660" height="495"></a><div class="work-preview-copy"><p class="eyebrow">${project.label}</p><${headingTag}><a href="${url(project.id)}">${esc(project.title)}</a></${headingTag}><p>${esc(project.lead)}</p><a class="text-button" href="${url(project.id)}">Посмотреть работу <span aria-hidden="true">↗</span></a></div></article>`;
   }
 
-  function workList(items, title) {
-    return `<section id="case-studies" class="container section work-list" aria-labelledby="case-studies-title"><div class="section-heading"><div><h2 id="case-studies-title">${title}</h2></div><p class="section-intro">Общие планы и детали мебели на объектах Ярги.</p></div><div class="work-grid${items.length===1?' work-grid-single':''}">${items.map(preview).join('')}</div></section>`;
+  function workList(items, title, isIndex = false) {
+    const headingTag = isIndex ? 'h1' : 'h2';
+    const cardHeading = isIndex ? 'h2' : 'h3';
+    return `<section id="case-studies" class="container section work-list" aria-labelledby="case-studies-title"><div class="section-heading"><div><${headingTag} id="case-studies-title">${title}</${headingTag}></div><p class="section-intro">Общие планы и детали мебели на объектах Ярги.</p></div><div class="work-grid${items.length===1?' work-grid-single':''}">${items.map(project => preview(project, cardHeading)).join('')}</div></section>`;
   }
 
   function relatedModel(model) {
@@ -188,17 +190,17 @@
     section.className = 'section container order-steps';
     section.setAttribute('aria-labelledby','order-title');
     section.innerHTML = `<div class="section-heading"><div><h2 id="order-title">Как проходит заказ</h2></div></div><div class="order-grid">
-      <article><h3>Фото и размеры</h3><p>Пришлите фото помещения, эскиз или ссылку. Обсудим планировку, материалы и ориентир по цене.</p></article>
-      <article><h3>Проект и смета</h3><p>Согласуем состав бесплатного дизайн-проекта и удобное время замера. После уточнения размеров подготовим две сметы и объясним, чем они отличаются.</p></article>
-      <article><h3>Договор и производство</h3><p>Фиксируем состав мебели, стоимость, сроки и этапы оплаты. Изготавливаем мебель в Воронеже.</p><a href="payment.html">Как устроена оплата</a></article>
-      <article><h3>Установка и приёмка</h3><p>Согласуем доставку, подъём и монтаж по Москве и Московской области. Условия гарантии фиксируем в договоре.</p><a href="delivery.html">Доставка и монтаж</a></article>
+      <article><img class="order-step-image" src="${wire()?'assets/work-placeholder.svg':'assets/order-brief.webp'}" alt="Фото комнаты на телефоне и эскиз кухни с размерами" width="960" height="600" loading="lazy" decoding="async"><div class="order-step-copy"><h3>Фото и размеры</h3><p>Пришлите фото помещения, эскиз или ссылку. Обсудим планировку, материалы и ориентир по цене.</p></div></article>
+      <article><img class="order-step-image" src="${wire()?'assets/work-placeholder.svg':'assets/order-estimate.webp'}" alt="Чертёж кухни, образцы фасадов и две сметы" width="960" height="600" loading="lazy" decoding="async"><div class="order-step-copy"><h3>Проект и смета</h3><p>Согласуем состав бесплатного дизайн-проекта и удобное время замера. После уточнения размеров подготовим две сметы и объясним, чем они отличаются.</p></div></article>
+      <article><img class="order-step-image" src="${wire()?'assets/work-placeholder.svg':'assets/order-production.webp'}" alt="Сборка корпуса шкафа в мастерской" width="960" height="600" loading="lazy" decoding="async"><div class="order-step-copy"><h3>Договор и производство</h3><p>Фиксируем состав мебели, стоимость, сроки и этапы оплаты. Изготавливаем мебель в Воронеже.</p><a href="payment.html">Как устроена оплата</a></div></article>
+      <article><img class="order-step-image" src="${wire()?'assets/work-placeholder.svg':'assets/order-installation.webp'}" alt="Монтажник устанавливает дверцу кухонного шкафа" width="960" height="600" loading="lazy" decoding="async"><div class="order-step-copy"><h3>Установка и приёмка</h3><p>Согласуем доставку, подъём и монтаж по Москве и Московской области. Условия гарантии фиксируем в договоре.</p><a href="delivery.html">Доставка и монтаж</a></div></article>
     </div><div class="order-actions"><button type="button" class="button button-primary" data-fast-inquiry>Рассчитать по фото <span aria-hidden="true">↗</span></button><button type="button" class="button button-outline" data-form="measure">Бесплатный замер <span aria-hidden="true">↗</span></button></div>`;
   }
 
   function renderProjectPage(main) {
     const project = find(new URLSearchParams(location.search).get('project'));
     if (!project) {
-      main.innerHTML = `<div class="container work-page-intro"><h1>Работы Ярги</h1><p>Корпусная мебель, которую мы изготовили для дома и бизнеса.</p></div>${workList(projects,'Выполненные проекты')}`;
+      main.innerHTML = workList(projects, 'Работы Ярги', true);
       return;
     }
     document.title = `${project.title} — работы Ярги`;

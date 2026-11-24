@@ -3,7 +3,6 @@
 .installations-head h2 { margin: 0; }
 .installations-head p { color: var(--muted); font-size: 14px; margin: 12px 0 0; }
 .installations-controls { display: flex; flex-shrink: 0; gap: 8px; }
-.installations-controls button[hidden] { display: none; }
 .installations-track {
   --installation-gutter: max(22px, calc((100vw - min(1400px, 92vw)) / 2));
   display: flex;
@@ -16,6 +15,12 @@
   scrollbar-color: var(--line) transparent;
   scrollbar-width: thin;
 }
+@media (pointer: fine) {
+  .installations-track, .installations-track button { cursor: grab; }
+}
+.installations-track.is-dragging { scroll-snap-type: none; user-select: none; }
+.installations-track.is-dragging, .installations-track.is-dragging button { cursor: grabbing; }
+.installations-track.is-dragging img { transform: none; }
 .installation-frame { flex: 0 0 auto; width: clamp(250px, 29vw, 435px); margin: 0; scroll-snap-align: start; }
 .installation-frame.installation-portrait { width: clamp(164px, 17vw, 252px); }
 .installation-frame button { display: block; width: 100%; height: clamp(205px, 23vw, 340px); background: var(--line); overflow: hidden; padding: 0; border: 0; }
