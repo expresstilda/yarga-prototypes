@@ -75,17 +75,11 @@
       <h2 id="fast-inquiry-title" tabindex="-1"></h2>
       <p class="fast-inquiry-selection" data-fast-selection hidden></p>
       <p class="dialog-description" id="fast-inquiry-description"></p>
-      <div class="fast-inquiry-actions">
-        <a class="button button-primary" data-fast-telegram target="_blank" rel="noopener noreferrer">Написать в Telegram <span aria-hidden="true">↗</span></a>
-        <a class="button button-outline" data-fast-max target="_blank" rel="noopener noreferrer">Написать в MAX <span aria-hidden="true">↗</span></a>
-      </div>
-      <button class="text-button fast-inquiry-copy" type="button" data-fast-copy>Скопировать текст для MAX</button>
-      <p class="fast-inquiry-status" role="status" hidden></p>
-      <label class="fast-inquiry-fallback" hidden>Текст запроса<textarea rows="4" readonly></textarea></label>`;
+      <div data-fast-form></div>`;
 
     modal.addEventListener('click', event => {
-      if (event.target.closest('[data-fast-telegram]')) reportAction('fast_telegram');
-      if (event.target.closest('[data-fast-max]')) reportAction('fast_max');
+      const channel = event.target.closest('[data-lead-chat]')?.dataset.leadChat;
+      if (channel) reportAction('fast_' + channel);
       if (event.target.closest('[data-fast-close]')) modal.close();
       if (event.target === modal) {
         const bounds = modal.getBoundingClientRect();
@@ -98,33 +92,13 @@
       if (opener?.isConnected) opener.focus({preventScroll: true});
     });
 
-    const fallback = modal.querySelector('.fast-inquiry-fallback');
-    const input = fallback.querySelector('textarea');
-    const status = modal.querySelector('[role="status"]');
-    modal.querySelector('[data-fast-copy]').addEventListener('click', async () => {
-      const currentInquiry = inquiry;
-      const text = input.value;
-      try {
-        await navigator.clipboard.writeText(text);
-        if (!modal.open || inquiry !== currentInquiry) return;
-        status.textContent = 'Текст скопирован. Вставьте его в чат MAX.';
-        status.hidden = false;
-      } catch {
-        if (!modal.open || inquiry !== currentInquiry) return;
-        fallback.hidden = false;
-        input.focus();
-        input.select();
-      }
-    });
-
     (document.getElementById('overlays') || document.body).append(modal);
     return modal;
   }
 
   document.addEventListener('click', event => {
     const trigger = event.target.closest('[data-fast-inquiry]');
-    const contact = window.YargaContact;
-    if (!trigger || !contact) return;
+    if (!trigger || !window.YargaContact) return;
     event.preventDefault();
 
     dialog ??= createDialog();
@@ -139,11 +113,9 @@
     const selection = dialog.querySelector('[data-fast-selection]');
     selection.textContent = summary;
     selection.hidden = !summary;
-    dialog.querySelector('[data-fast-telegram]').href = contact.telegramDraft(draft);
-    dialog.querySelector('[data-fast-max]').href = contact.maxUrl;
-    dialog.querySelector('[role="status"]').hidden = true;
-    dialog.querySelector('.fast-inquiry-fallback').hidden = true;
-    dialog.querySelector('textarea').value = draft;
+    const formHost = dialog.querySelector('[data-fast-form]');
+    formHost.innerHTML = window.YargaLeadForm.markup();
+    window.YargaLeadForm.bind(formHost.querySelector('[data-lead-form]'), {subject: title, message: () => draft});
 
     dialog.showModal();
     document.body.classList.add('locked');
