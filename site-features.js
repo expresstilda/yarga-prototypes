@@ -52,6 +52,7 @@
     const track = section.querySelector('.installations-track');
     const frames = [...track.children];
     const move = direction => {
+      track.classList.remove('is-autoplay-paused');
       const current = track.scrollLeft;
       const end = track.scrollWidth - track.clientWidth;
       const start = frames[0].offsetLeft;
@@ -63,30 +64,59 @@
       track.scrollTo({left, behavior:reduced.matches || wrap ? 'instant' : 'smooth'});
     };
 
+    const autoplayDelay = 1250;
     let visible = false;
+    let hovered = false;
+    let heldPointer;
     let autoplay;
-    const observer = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      if (!visible || autoplay || reduced.matches) return;
-      const started = performance.now();
-      autoplay = setInterval(() => {
-        if (reduced.matches || performance.now() - started > 4300) {
-          stopAutoplay();
-          return;
+    let automaticMove = false;
+
+    function scheduleAutoplay() {
+      clearTimeout(autoplay);
+      if (!visible || document.hidden || reduced.matches || hovered || heldPointer !== undefined) return;
+      autoplay = setTimeout(() => {
+        if (!section.querySelector(':focus-visible') && !document.querySelector('dialog[open]')) {
+          move(1);
+          automaticMove = true;
         }
-        if (visible && !document.hidden && !section.matches(':hover, :focus-within') && !document.querySelector('dialog[open]')) move(1);
-      }, 1250);
-    }, {threshold:.25});
-    function stopAutoplay() {
-      clearInterval(autoplay);
-      observer.disconnect();
+        scheduleAutoplay();
+      }, autoplayDelay);
     }
-    observer.observe(section);
+
+    function pauseAutoplay() {
+      if (automaticMove) {
+        const left = track.scrollLeft;
+        track.classList.add('is-autoplay-paused');
+        track.scrollTo({left, behavior:'instant'});
+        automaticMove = false;
+      }
+      scheduleAutoplay();
+    }
+
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      pauseAutoplay();
+    }, {threshold:.25}).observe(section);
+    section.addEventListener('pointerenter', event => {
+      if (event.pointerType === 'touch') return;
+      hovered = true;
+      pauseAutoplay();
+    });
+    section.addEventListener('pointerleave', event => {
+      if (event.pointerType === 'touch') return;
+      hovered = false;
+      scheduleAutoplay();
+    });
+    section.addEventListener('focusin', event => {
+      if (event.target.matches(':focus-visible')) pauseAutoplay();
+    });
+    document.addEventListener('visibilitychange', pauseAutoplay);
+    reduced.addEventListener('change', pauseAutoplay);
 
     section.addEventListener('click',event => {
       const step = event.target.closest('[data-installation-step]');
       if (step) {
-        stopAutoplay();
+        pauseAutoplay();
         move(Number(step.dataset.installationStep));
       }
       const photo = event.target.closest('[data-installation-index]');
@@ -95,19 +125,21 @@
     track.addEventListener('keydown',event => {
       if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
       event.preventDefault();
-      stopAutoplay();
+      pauseAutoplay();
       move(event.key === 'ArrowRight' ? 1 : -1);
     });
     track.addEventListener('wheel',event => {
-      if (event.deltaX || event.shiftKey) stopAutoplay();
+      if (event.deltaX || event.shiftKey) pauseAutoplay();
     }, {passive:true});
 
     let drag;
     let suppressClick = false;
     track.addEventListener('pointerdown',event => {
-      stopAutoplay();
+      if (!event.isPrimary || event.button !== 0) return;
+      heldPointer = event.pointerId;
+      pauseAutoplay();
       suppressClick = false;
-      if (event.pointerType !== 'mouse' || event.button !== 0) return;
+      if (event.pointerType !== 'mouse') return;
       const left = track.scrollLeft;
       track.scrollTo({left, behavior:'instant'});
       drag = {id:event.pointerId, x:event.clientX, left};
@@ -125,9 +157,11 @@
       track.scrollLeft = drag.left - delta;
     });
     const finishDrag = event => {
-      if (drag?.id !== event.pointerId) return;
+      if (heldPointer !== event.pointerId) return;
       track.classList.remove('is-dragging');
+      heldPointer = undefined;
       drag = undefined;
+      scheduleAutoplay();
     };
     window.addEventListener('pointerup',finishDrag);
     window.addEventListener('pointercancel',finishDrag);

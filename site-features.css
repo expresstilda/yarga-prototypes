@@ -18,7 +18,8 @@
 @media (pointer: fine) {
   .installations-track, .installations-track button { cursor: grab; }
 }
-.installations-track.is-dragging { scroll-snap-type: none; user-select: none; }
+.installations-track.is-dragging, .installations-track.is-autoplay-paused { scroll-snap-type: none; }
+.installations-track.is-dragging { user-select: none; }
 .installations-track.is-dragging, .installations-track.is-dragging button { cursor: grabbing; }
 .installations-track.is-dragging img { transform: none; }
 .installation-frame { flex: 0 0 auto; width: clamp(250px, 29vw, 435px); margin: 0; scroll-snap-align: start; }
