@@ -20,19 +20,21 @@
     other:[{id:'description',type:'text',title:'Что вы хотите изготовить?',hint:'Например, прикроватную тумбу, комод или стеллаж по вашему эскизу.'},size,finish,timing]
   };
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const requestEmail = 'yarga4@yandex.ru';
   let state, dialog, previousFocus;
   const isWireframe = () => !!document.querySelector('link[href*="wireframe.css"]');
   const category = () => kinds.find(k=>k[0]===state.category);
-  const steps = () => [...(state.chooseType?[{id:'category',type:'category',title:state.purpose==='design'?'Для какой мебели нужен дизайн-проект?':'Какую мебель вы хотите рассчитать?'}]:[]),...routes[state.category||'kitchens'],{id:'contact',type:'contact',title:state.purpose==='design'?'Отправьте детали для дизайн-проекта':'Отправьте детали для расчёта'}];
+  const steps = () => [...(state.chooseType?[{id:'category',type:'category',title:state.purpose==='design'?'Для какой мебели нужен дизайн-проект?':'Какую мебель вы хотите рассчитать?'}]:[]),...routes[state.category||'kitchens'],{id:'contact',type:'contact',title:state.purpose==='design'?'Заявка на дизайн-проект':'Заявка на расчёт мебели'}];
   function ensureDialog(){
     if(dialog)return;
     dialog=document.createElement('dialog');dialog.className='quiz-dialog';dialog.id='quiz-dialog';dialog.setAttribute('aria-labelledby','quiz-title');
     document.getElementById('overlays').append(dialog);
-    dialog.addEventListener('close',()=>{document.body.classList.remove('locked');previousFocus?.focus();});
+    dialog.addEventListener('close',()=>{if(!document.querySelector('dialog[open]'))document.body.classList.remove('locked');previousFocus?.focus();});
     dialog.addEventListener('click',event=>{
       if(event.target.closest('[data-quiz-close]')){dialog.close();return;}
       const back=event.target.closest('[data-quiz-back]');if(back){saveInputs();if(state.editing){state.index=steps().length-1;state.editing=false;}else state.index--;render();return;}
       const edit=event.target.closest('[data-quiz-edit]');if(edit){saveInputs();state.index=Number(edit.dataset.quizEdit);state.editing=true;render();return;}
+      const copy=event.target.closest('[data-quiz-copy]');if(copy){copyRequest(copy.closest('.quiz-contact'));return;}
       const next=event.target.closest('[data-quiz-next]');if(next)advance();
     });
     dialog.addEventListener('change',event=>{
@@ -47,7 +49,16 @@
       const next=dialog.querySelector('[data-quiz-next]');if(next)next.disabled=!validStep();
       if(input.name==='unknownSize')dialog.querySelectorAll('[data-size]').forEach(x=>x.disabled=input.checked);
     });
-    dialog.addEventListener('input',event=>{saveInputs();const next=dialog.querySelector('[data-quiz-next]');if(next)next.disabled=!validStep();});
+    dialog.addEventListener('input',event=>{
+      const field=event.target.closest('[data-quiz-contact]');
+      if(field){field.setCustomValidity('');field.form.querySelector('[data-quiz-email-status]').hidden=true;}
+      saveInputs();const next=dialog.querySelector('[data-quiz-next]');if(next)next.disabled=!validStep();
+    });
+    dialog.addEventListener('submit',event=>{
+      if(!event.target.matches('[data-quiz-request]'))return;
+      event.preventDefault();
+      prepareEmail(event.target);
+    });
   }
   function open(kind, modelId, purpose){
     ensureDialog();previousFocus=document.activeElement;
@@ -59,7 +70,7 @@
       if (routes.kitchens[0].options.includes(model.style)) answers.style = model.style;
       if (routes.kitchens[1].options.includes(model.type)) answers.layout = model.type;
     }
-    state={category:known?current:null,chooseType:!known,index:0,answers,model,purpose};
+    state={category:known?current:null,chooseType:!known,index:0,answers,model,purpose,contact:{name:'',phone:''}};
     render();closeMenus();dialog.showModal();document.body.classList.add('locked');dialog.querySelector('#quiz-title').focus();
   }
   function dimensionFields(){
@@ -77,6 +88,7 @@
       dialog.querySelectorAll('[data-size]').forEach(x=>values[x.dataset.size]=x.value);state.answers.size=values;
     }
     if(step.type==='text')state.answers.description=dialog.querySelector('[name=description]')?.value||'';
+    if(step.type==='contact')dialog.querySelectorAll('[data-quiz-contact]').forEach(field=>{state.contact[field.name]=field.value;});
   }
   function validStep(){
     const step=steps()[state.index], answer=state.answers[step.id];
@@ -106,18 +118,90 @@
       return `<div><dt>${esc(step.title)}</dt><dd>${esc(answerText(step))} <button type="button" data-quiz-edit="${i}" aria-label="Изменить: ${esc(step.title)}">Изменить</button></dd></div>`;
     }).join('')}</dl></div>`;
   }
-  function contactStep(){
+  function requestText(includeContact=false){
     const request = state.purpose==='design' ? 'Хотелось бы заказать бесплатный дизайн-проект.' : 'Хотелось бы получить расчёт мебели.';
     const model = state.model;
     const lines = ['Здравствуйте! ' + request, 'Направление: ' + category()[1]];
     if(model)lines.push('Модель: ' + [model.code, model.name].filter(Boolean).join(' · '));
     for(const step of routes[state.category]){
-      if(step.type==='text')continue;
+      if(step.type==='text' && !includeContact)continue;
       const answer=answerText(step);
       if(answer)lines.push(`${step.title} ${answer}`);
     }
+    if(includeContact){
+      const name=state.contact.name.trim();
+      const phone=normalizedPhone(state.contact.phone);
+      if(name)lines.push(`Имя — ${name}`);
+      if(phone)lines.push(`Телефон — ${phone}`);
+    }
+    return lines.join('\n');
+  }
+  function normalizedPhone(value){
+    const raw=value.trim();
+    if(!/^\+?[\d\s().-]+$/.test(raw))return '';
+    let digits=raw.replace(/\D/g,'');
+    if(digits.length<10 || digits.length>15 || /^([0-9])\1+$/.test(digits))return '';
+    if(!raw.startsWith('+') && digits.length===10)digits=`7${digits}`;
+    if(!raw.startsWith('+') && digits.length===11 && digits.startsWith('8'))digits=`7${digits.slice(1)}`;
+    return `+${digits}`;
+  }
+  function prepareEmail(form){
+    saveInputs();
+    const name=form.elements.namedItem('name');
+    const phone=form.elements.namedItem('phone');
+    name.setCustomValidity(state.contact.name.trim()?'':'Введите ваше имя.');
+    phone.setCustomValidity(normalizedPhone(state.contact.phone)?'':'Введите телефон с кодом страны или 10 цифр российского номера.');
+    if(!form.reportValidity())return;
+    const subject=state.purpose==='design'?'Ярга · заявка на дизайн-проект':'Ярга · заявка на расчёт мебели';
+    const link=form.querySelector('[data-quiz-email-link]');
+    link.href=`mailto:${requestEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(requestText(true))}`;
+    form.querySelector('[data-quiz-email-status]').hidden=false;
+    link.click();
+  }
+  async function copyRequest(panel){
+    saveInputs();
+    const text=requestText(true);
+    const status=panel.querySelector('[data-quiz-copy-status]');
+    const fallback=panel.querySelector('[data-quiz-copy-fallback]');
+    try{
+      await navigator.clipboard.writeText(text);
+      if(!dialog.open || !panel.isConnected)return;
+      fallback.hidden=true;
+      status.textContent='Заявка скопирована. Вставьте её в чат.';
+    }catch{
+      if(!dialog.open || !panel.isConnected)return;
+      fallback.hidden=false;
+      const input=fallback.querySelector('textarea');
+      input.value=text;
+      input.focus();input.select();
+      status.textContent='Скопируйте выделенный текст и вставьте его в чат.';
+    }
+  }
+  function contactStep(){
     const contact=window.YargaContact;
-    return `<div class="quiz-contact-layout">${summary()}<div class="quiz-contact"><h3>Напишите Ярге</h3><p>В Telegram откроется черновик с выбранными вариантами. Проверьте его и отправьте в чат.${state.category==='other'?' Описание изделия можно добавить в сообщении.':''}</p><div class="contact-actions"><a class="button button-primary" href="${esc(contact.telegramDraft(lines.join('\n')))}" target="_blank" rel="noopener noreferrer">Продолжить в Telegram <span aria-hidden="true">↗</span></a><a class="text-button" href="${esc(contact.maxUrl)}" target="_blank" rel="noopener noreferrer">Написать в MAX</a><a class="text-button" href="tel:+79803400340">Позвонить</a></div></div></div>`;
+    return `<div class="quiz-contact-layout"><div class="quiz-contact">
+      <form data-quiz-request>
+        <h3>Куда перезвонить?</h3>
+        <div class="quiz-contact-fields">
+          <label>Ваше имя<input data-quiz-contact name="name" type="text" autocomplete="name" placeholder="Как к вам обращаться" required maxlength="80" value="${esc(state.contact.name)}"></label>
+          <label>Телефон<input data-quiz-contact name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7 900 000-00-00" required maxlength="32" value="${esc(state.contact.phone)}"></label>
+        </div>
+        <button class="button button-primary" type="submit">Открыть заявку в почте <span aria-hidden="true">↗</span></button>
+        <p class="quiz-contact-note">Откроется письмо с ответами и контактами. Отправьте его в почтовом приложении.</p>
+        <p class="quiz-contact-note" data-quiz-email-status hidden><a data-quiz-email-link>Открыть письмо ещё раз</a></p>
+      </form>
+      <div class="quiz-chat-options" aria-label="Связаться в мессенджере">
+        <h3>Удобнее написать?</h3>
+        <div class="contact-actions">
+          <a class="button button-outline" href="${esc(contact.telegramDraft(requestText()))}" target="_blank" rel="noopener noreferrer">Продолжить в Telegram <span aria-hidden="true">↗</span></a>
+          <a class="button button-outline" href="${esc(contact.maxUrl)}" target="_blank" rel="noopener noreferrer">Написать в MAX <span aria-hidden="true">↗</span></a>
+        </div>
+        <p class="quiz-contact-note">В Telegram откроется черновик с ответами. Для MAX скопируйте заявку и вставьте её в чат. При копировании добавятся заполненные контакты.</p>
+        <button class="text-button" type="button" data-quiz-copy>Скопировать заявку</button>
+        <p class="quiz-contact-note" data-quiz-copy-status role="status"></p>
+        <label data-quiz-copy-fallback hidden>Текст заявки<textarea rows="5" readonly></textarea></label>
+      </div>
+    </div>${summary()}</div>`;
   }
   function render(){
     const list=steps(), step=list[state.index], selected=state.answers[step.id];

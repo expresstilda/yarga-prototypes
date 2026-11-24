@@ -38,7 +38,7 @@
     section.className = 'section installations';
     section.setAttribute('aria-labelledby','installations-title');
     section.innerHTML = `<div class="container installations-head">
-      <div><h2 id="installations-title">Фото с объектов Ярги</h2><p>Посмотрите, как мебель выглядит после установки.</p></div>
+      <div><h2 id="installations-title">Фото с последних объектов</h2><p>Кухни, шкафы и другая мебель Ярги после установки.</p></div>
       <div class="installations-controls" aria-label="Управление лентой">
         <button type="button" class="round-button" data-installation-step="-1" aria-label="Предыдущие фотографии">←</button>
         <button type="button" class="round-button" data-installation-pause aria-label="Остановить автоматическую прокрутку" aria-pressed="false">Ⅱ</button>
@@ -92,7 +92,39 @@
     new IntersectionObserver(entries => { visible = entries[0].isIntersecting; }, {threshold:.2}).observe(section);
     setInterval(() => {
       if (visible && !paused && !reduced.matches && !document.hidden && !section.matches(':hover, :focus-within') && !document.querySelector('dialog[open]')) move(1);
-    }, 4300);
+    }, 2300);
+  }
+
+  const offerHistoryCookie = 'yarga_design_offer';
+  const offerSitePath = new URL('.',location.href).pathname.replace(/v2proto\/$/,'');
+  const offerStorageKey = `${offerHistoryCookie}:${offerSitePath}`;
+  const day = 24 * 60 * 60 * 1000;
+  const offerCooldown = 7 * day;
+  const offerWindow = 90 * day;
+  const offerLimit = 2;
+
+  function offerHistory(now){
+    let value;
+    try{
+      value=document.cookie.split('; ').find(part=>part.startsWith(`${offerHistoryCookie}=`))?.split('=')[1];
+    }catch{}
+    if(!value){
+      try{ value=localStorage.getItem(offerStorageKey); }catch{}
+    }
+    const parsed=typeof value==='string' && /^[0-2]\.\d+\.\d+$/.test(value);
+    if(parsed){
+      const [count,first,last]=value.split('.').map(Number);
+      if(first>0 && last>=first && now-first<offerWindow)return {count,first,last};
+    }
+    return {count:0,first:now,last:0};
+  }
+
+  function rememberOffer(history, now, manual){
+    const record=`${history.count+(manual?0:1)}.${history.first}.${now}`;
+    const expires=Math.ceil((history.first+offerWindow-now)/1000);
+    const secure=location.protocol==='https:'?'; Secure':'';
+    try{ document.cookie=`${offerHistoryCookie}=${record}; Path=${offerSitePath}; Max-Age=${expires}; SameSite=Lax${secure}`; }catch{}
+    try{ localStorage.setItem(offerStorageKey,record); }catch{}
   }
 
   function addOffer(page) {
@@ -108,19 +140,22 @@
       <button type="button" class="button button-primary" data-offer-start>Получить дизайн-проект <span aria-hidden="true">↗</span></button>
       <button type="button" class="design-offer-dismiss" data-offer-close>Продолжить просмотр</button></div>`;
     document.getElementById('overlays').append(dialog);
-    const key = `yarga-design-seen:${page}`;
     let engaged = false;
-    let seen = false;
+    let shownOnPage = false;
+    let legacySeen = false;
     let previousFocus;
-    try { seen = sessionStorage.getItem(key) === '1'; } catch {}
+    try{ legacySeen=Object.keys(sessionStorage).some(key=>key.startsWith('yarga-design-seen:') && sessionStorage.getItem(key)==='1'); }catch{}
     const interacted = () => engaged || !!document.querySelector('dialog[open], .site-header.menu-open');
     const show = manual => {
       if (dialog.open || document.querySelector('dialog[open]')) return;
-      if (!manual && (seen || interacted() || document.hidden || !document.hasFocus())) return;
-      seen = true;
-      try { sessionStorage.setItem(key,'1'); } catch {}
+      if(!manual && (shownOnPage || legacySeen || interacted() || document.hidden || !document.hasFocus()))return;
+      const now=Date.now();
+      const history=offerHistory(now);
+      if(!manual && (history.count>=offerLimit || (history.last>0 && now-history.last<offerCooldown)))return;
       previousFocus = document.activeElement;
       dialog.showModal();
+      shownOnPage=true;
+      rememberOffer(history,now,manual);
       document.body.classList.add('locked');
       dialog.querySelector('h2').focus();
     };
@@ -140,11 +175,11 @@
     });
     const started = performance.now();
     const timer = setInterval(() => {
-      if (seen || engaged) { clearInterval(timer); return; }
-      if (performance.now() - started >= 14000 && scrollY >= Math.min(500, innerHeight * .55)) show(false);
+      if (shownOnPage || legacySeen || engaged) { clearInterval(timer); return; }
+      if (performance.now() - started >= 22000 && scrollY >= Math.min(500, innerHeight * .55)) show(false);
     }, 1000);
     document.addEventListener('mouseout',event => {
-      if (matchMedia('(pointer:fine)').matches && !event.relatedTarget && event.clientY <= 0 && performance.now() - started > 8000) show(false);
+      if (matchMedia('(pointer:fine)').matches && !event.relatedTarget && event.clientY <= 0 && performance.now() - started >= 14000) show(false);
     });
   }
 
