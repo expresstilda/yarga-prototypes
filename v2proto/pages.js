@@ -19,8 +19,8 @@ window.YargaPages={render(page,categories){
     },
     designers: {
       name: "Дизайнерам",
-      title: "Программа сотрудничества для дизайнеров интерьера",
-      lead: "Изготавливаем кухни, шкафы, гардеробные и другую корпусную мебель по вашим проектам. Помогаем подобрать материалы и фурнитуру, рассчитываем стоимость и согласуем монтаж.",
+      title: "Изготавливаем мебель по проектам дизайнеров",
+      lead: "Делаем кухни, шкафы, гардеробные и другую корпусную мебель. По эскизу, чертежам или техническому заданию рассчитаем стоимость и поможем подобрать материалы.",
       image: "category-offices.svg",
       heading: "Как работаем с вашим проектом",
       text: "По плану или эскизу обсудим размеры, отделку и наполнение. Если нужно изменить конструкцию или заменить материал, согласуем это с вами до изготовления.",
@@ -95,10 +95,11 @@ window.YargaPages={render(page,categories){
             <div>
               <h1>${d.title}</h1>
               <p class="lead">${d.lead}</p>
+              <div class="inner-hero-action"><button class="button button-outline" type="button" data-fast-inquiry data-fast-purpose="designer-estimate">Отправить проект на расчёт <span aria-hidden="true">↗</span></button></div>
             </div>
             <section class="designer-inquiry" id="designer-inquiry" aria-labelledby="designer-inquiry-title">
-              <h2 id="designer-inquiry-title">Обсудить сотрудничество</h2>
-              <p>Оставьте имя и телефон. Мы перезвоним, расскажем об условиях программы и ответим на ваши вопросы.</p>
+              <h2 id="designer-inquiry-title">Программа для дизайнеров интерьера</h2>
+              <p>Оставьте имя и телефон. Мы перезвоним и расскажем об условиях сотрудничества.</p>
               ${window.YargaLeadForm.markup({}, {callback:true})}
             </section>
           </div>
