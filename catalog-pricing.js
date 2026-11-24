@@ -32,33 +32,30 @@
   const examples = {
     kitchens: [
       [55000, 'Нижний ряд · 1 пог. м', 'Корпуса и гладкие фасады из ЛДСП, петли, столешница из ЛДСП с покрытием HPL. Открытые полки и настенные шкафы считаются отдельно.', [
-        'kitchens-series-02', 'kitchen-blue-linear'
+        'kitchens-series-02'
       ]],
       [65000, 'Верхний и нижний ряд · 1 пог. м', 'Корпуса и гладкие фасады из ЛДСП, полки, петли, ручки и столешница из ЛДСП с покрытием HPL. Верхние шкафы высотой до 72 см, нижние глубиной до 60 см.', [
         'kitchens-series-03', 'kitchens-series-06', 'kitchen-u-walnut', 'kitchen-island', 'kitchen-olive-island'
       ]],
       [79000, 'Верхний и нижний ряд · 1 пог. м', 'Корпуса из ЛДСП, гладкие фасады из МДФ, полки, петли, один базовый ящик и столешница из ЛДСП с покрытием HPL. Верхние шкафы до 72 см, нижние глубиной до 60 см.', [
-        'kitchen-clay-peninsula', 'kitchen-petrol-peninsula', 'kitchens-series-04', 'kitchens-series-05', 'kitchens-series-09', 'kitchens-series-11', 'kitchens-series-17'
+        'kitchen-clay-peninsula', 'kitchen-petrol-peninsula', 'kitchens-series-04', 'kitchens-series-09', 'kitchens-series-17', 'kitchens-series-05'
       ]],
       [95000, 'Верхний и нижний ряд · 1 пог. м', 'Корпуса из ЛДСП, рамочные фасады из окрашенного МДФ, петли, ручки, полки и столешница из ЛДСП с покрытием HPL. Верхние шкафы до 72 см, нижние глубиной до 60 см.', [
-        'kitchen-cloud-shaker', 'kitchen-sage-frame', 'kitchens-series-01', 'kitchens-series-08', 'kitchens-series-18'
+        'kitchen-cloud-shaker', 'kitchen-sage-frame', 'kitchens-series-01', 'kitchens-series-08', 'kitchens-series-18', 'kitchens-series-07'
       ]],
       [105000, 'Основной ряд · 1 пог. м', 'Корпуса из ЛДСП, гладкие фасады из МДФ, полки и ламинированная столешница. В зависимости от модели — профиль для открывания или один подъёмник. Стеклянные секции считают отдельно.', [
         'kitchens-series-14', 'kitchens-series-13', 'kitchens-series-10', 'kitchen-ink-glass', 'kitchen-chalk-corner'
       ]],
-      [115000, 'Основной ряд · 1 пог. м', 'Корпуса из ЛДСП, фасады из МДФ со шпоном, петли, полки и столешница из ЛДСП с покрытием HPL. Стеклянные секции и закруглённые детали считаются отдельно.', [
-        'kitchen-wood-tall', 'kitchen-graphite-oak', 'kitchens-series-15', 'kitchens-series-16'
+      [115000, 'Основной ряд · 1 пог. м', 'Корпуса из ЛДСП, фасады из МДФ со шпоном или в сочетании с окрашенными фасадами, петли, полки и столешница из ЛДСП с покрытием HPL. Стеклянные секции и закруглённые детали считаются отдельно.', [
+        'kitchen-wood-tall', 'kitchen-graphite-oak', 'kitchens-series-15', 'kitchens-series-16', 'kitchens-series-12', 'kitchens-series-11', 'kitchen-blue-linear'
       ]],
-      [145000, 'Ряд с металлическими фасадами · 1 пог. м', 'Корпуса из ЛДСП, фасады с облицовкой металлом, петли и базовые направляющие, столешница HPL. Столешница из нержавеющей стали считается отдельно.', [
-        'kitchens-series-07', 'kitchens-series-12'
-      ]]
     ],
     wardrobes: [
       [95000, 'Шкаф шириной 2 м, высотой 2,4 м и глубиной 60 см', 'Корпус и распашные фасады из ЛДСП, полки, штанга, петли и ручки.', [
         'wardrobe-wall', 'wardrobes-series-01'
       ]],
       [119000, 'Шкаф шириной 1,5 м, высотой 2,2 м и глубиной 55 см', 'Корпус, полки, штанга, распашные рамочные фасады с декоративными вставками, петли и ручки.', [
-        'wardrobe-warm', 'wardrobes-series-04', 'wardrobes-series-13', 'wardrobes-series-25'
+        'wardrobes-series-04', 'wardrobes-series-13'
       ]],
       [135000, 'Шкаф шириной 2 м, высотой 2,4 м и глубиной 60 см', 'Корпус, полки, штанга и две раздвижные створки на направляющих. Для зеркальной модели одна створка с зеркалом, для остальных — с панельными вставками.', [
         'wardrobe-sliding', 'wardrobes-series-02', 'wardrobes-series-08', 'wardrobes-series-14'
@@ -67,10 +64,10 @@
         'wardrobe-olive-glass', 'wardrobe-ash-sliding', 'wardrobes-series-10', 'wardrobes-series-16', 'wardrobes-series-19'
       ]],
       [145000, 'Шкаф шириной 2,2 м, высотой 2,4 м и глубиной 60 см', 'Корпус, полки, штанга и базовая открытая ниша. В зависимости от модели в нише полки, штанга или столешница.', [
-        'wardrobes-series-05', 'wardrobes-series-17', 'wardrobes-series-18'
+        'wardrobes-series-05', 'wardrobes-series-17', 'wardrobes-series-18', 'wardrobe-warm', 'wardrobes-series-23', 'wardrobes-series-25'
       ]],
       [149000, 'Шкаф шириной 2,2 м, высотой 2,4 м и глубиной 60 см', 'Корпус, фасады, полки, штанга и два выдвижных элемента: ящики или корзины по модели.', [
-        'wardrobes-series-06', 'wardrobes-series-12', 'wardrobes-series-23', 'wardrobes-series-24'
+        'wardrobes-series-06', 'wardrobes-series-12', 'wardrobes-series-24'
       ]],
       [185000, 'Две стороны шкафа шириной 1,6 и 1,2 м, глубиной до 60 см', 'Угловые и прямые секции, дверцы, полки, штанга и базовая фурнитура. Специальный закруглённый торец или мягкое сиденье считают отдельно.', [
         'wardrobes-series-03', 'wardrobes-series-09', 'wardrobes-series-15', 'wardrobes-series-21', 'wardrobes-series-22'
@@ -84,13 +81,13 @@
     ],
     dressing: [
       [75000, 'Открытая система вдоль одной стены шириной 2 м', 'Стойки, полки, штанги и крепёж. Для сетчатой модели — сетчатые полки. Свободно стоящие модули считают отдельно.', [
-        'dressing-aluminum-open', 'dressing-series-11', 'dressing-series-20'
+        'dressing-series-20'
       ]],
       [95000, 'Открытая система вдоль одной стены шириной 2 м и высотой 2,3 м', 'Секции из ЛДСП, полки, две штанги и один ящик или корзина. Полноразмерное зеркало и дополнительные модули считают отдельно.', [
-        'dressing-series-04', 'dressing-series-05', 'dressing-series-07', 'dressing-series-08', 'dressing-series-09', 'dressing-series-14', 'dressing-series-22', 'dressing-series-23', 'dressing-series-24'
+        'dressing-series-05', 'dressing-series-07', 'dressing-series-08', 'dressing-series-09', 'dressing-series-14', 'dressing-series-22', 'dressing-series-23', 'dressing-series-24'
       ]],
       [139000, 'Открытые секции на двух стенах, всего 3 м по стенам', 'Корпусные секции, полки, штанги и два ящика. Отдельный комод, скамью или зеркало считают отдельно.', [
-        'dressing-sand-corner', 'dressing-open', 'dressing-corner', 'dressing-series-01', 'dressing-series-03', 'dressing-series-15', 'dressing-series-16'
+        'dressing-sand-corner', 'dressing-open', 'dressing-corner', 'dressing-series-01', 'dressing-series-03', 'dressing-series-15', 'dressing-series-16', 'dressing-aluminum-open'
       ]],
       [159000, 'Ряд закрытого хранения шириной 2 м и высотой 2,4 м', 'Корпуса, полки, штанга, дверцы и петли. Столик, дополнительные антресоли и внутренние аксессуары считают отдельно.', [
         'dressing-series-06', 'dressing-series-10', 'dressing-series-12', 'dressing-series-17', 'dressing-series-18'
@@ -99,15 +96,15 @@
         'dressing-smoked-island', 'dressing-series-02', 'dressing-series-13', 'dressing-series-21'
       ]],
       [189000, 'Ряд хранения шириной 2 м и проём шириной до 1,2 м', 'Открытые полки, штанга и полотно со сдвижным механизмом. Подготовку или переделку стены под дверь считают отдельно.', [
-        'dressing-closed', 'dressing-series-19'
+        'dressing-closed', 'dressing-series-19', 'dressing-series-04', 'dressing-series-11'
       ]]
     ],
     living: [
       [59000, 'Тумба или комод шириной 1,6 м', 'Корпус, фасады, открытая секция или полки, ручки и базовая фурнитура. Ножки входят, если предусмотрены моделью.', [
-        'living-series-01', 'living-series-14', 'living-series-16', 'living-series-20', 'living-series-21'
+        'living-series-01', 'living-series-14', 'living-series-16', 'living-series-21'
       ]],
-      [85000, 'Тумба или комод шириной 1,6 м', 'Корпус и фурнитура, декоративные фасады по модели: плетёные, рифлёные или с радиусными деталями.', [
-        'living-series-08', 'living-series-12', 'living-series-25'
+      [85000, 'Тумба или комод шириной 1,6 м', 'Корпус и фурнитура, декоративные фасады по модели: рифлёные или с радиусными деталями.', [
+        'living-series-12', 'living-series-25'
       ]],
       [89000, 'Композиция шириной до 1,8 м', 'Корпус, полки и секции для хранения. По модели — комод с открытыми полками, навесной шкаф или стеклянная витрина.', [
         'living-series-05', 'living-series-09', 'living-series-24'
@@ -116,10 +113,10 @@
         'living-series-04', 'living-series-11', 'living-series-15', 'living-series-19', 'living-series-22'
       ]],
       [139000, 'ТВ-зона шириной до 2,4 м', 'Тумба, стеновая панель или полки, секция для техники и базовая фурнитура. Натуральный камень и раздвижной экран считают отдельно.', [
-        'living-tv', 'living-series-02', 'living-series-07', 'living-series-10'
+        'living-tv', 'living-series-02', 'living-series-07', 'living-series-10', 'living-series-20'
       ]],
       [179000, 'ТВ-зона шириной до 2,6 м', 'Тумба, полки, одна застеклённая секция и базовая фурнитура.', [
-        'living-tv-lined', 'living-color-vitrine', 'living-series-17'
+        'living-tv-lined', 'living-color-vitrine', 'living-series-17', 'living-series-08'
       ]],
       [195000, 'Библиотека или пара витрин шириной до 2,6 м', 'Открытые полки и нижние закрытые секции. По модели — одна застеклённая секция или рамочные фасады. Скамью, диван и камин считают отдельно.', [
         'living-openplan', 'living-library', 'living-series-03', 'living-series-06', 'living-series-13', 'living-series-18', 'living-series-23'
@@ -145,7 +142,7 @@
         'hallway-wood', 'hallway-clay-niche', 'hallways-series-04', 'hallways-series-09', 'hallways-series-15'
       ]],
       [143000, 'Шкаф шириной 1,8 м и высотой до 2,4 м', 'Корпус, штанга, полки, фасады и механизм открывания. По модели — одна зеркальная или стеклянная створка либо декоративная вставка.', [
-        'hallways-series-03', 'hallways-series-10', 'hallways-series-11', 'hallways-series-16', 'hallways-series-18', 'hallways-series-19', 'hallways-series-20'
+        'hallways-series-03', 'hallways-series-10', 'hallways-series-16', 'hallways-series-18', 'hallways-series-19', 'hallways-series-20', 'hallways-series-11'
       ]],
       [175000, 'Встроенная композиция шириной до 2,2 м', 'Корпуса, полки, двери и фурнитура. По модели — антресоль, одна скамья или обувная секция. Радиусные детали, подгонку под проём и под лестницу уточняют после замера.', [
         'hallway-olive-bench', 'hallway-bench', 'hallway-curved-tiles', 'hallways-series-14', 'hallways-series-22'
@@ -153,22 +150,22 @@
     ],
     offices: [
       [49000, 'Стол шириной 1,4 м и глубиной 65 см', 'Столешница, опоры и крепёж. По модели — один неглубокий ящик или небольшая приставная тумба.', [
-        'offices-series-01', 'offices-series-02', 'offices-series-09', 'offices-series-23'
+        'offices-series-02', 'offices-series-09', 'offices-series-23'
       ]],
       [85000, 'Рабочая поверхность шириной до 1,6 м', 'Столешница, несущие опоры и фурнитура. По модели — ящики, стеклянная боковина или механизм выдвижения.', [
         'office-window', 'offices-series-04', 'offices-series-12', 'offices-series-16'
       ]],
       [112000, 'Рабочая зона шириной до 2,1 м', 'Рабочая поверхность, базовые тумба и полки. По модели — угловая секция, складной механизм или общий модуль для двух рабочих мест.', [
-        'office-oak-window', 'offices-series-06', 'offices-series-13', 'offices-series-18', 'offices-series-20'
+        'office-oak-window', 'offices-series-06', 'offices-series-13', 'offices-series-18', 'offices-series-20', 'offices-series-01'
       ]],
       [105000, 'Стеллаж шириной 1,6 м и высотой 2,2 м', 'Корпус, полки, базовые нижние секции и фурнитура. Декоративные дверцы или раздвижную панель считают отдельно.', [
-        'offices-series-05', 'offices-series-08', 'offices-series-11', 'offices-series-17', 'offices-series-22'
+        'offices-series-05', 'offices-series-08', 'offices-series-11', 'offices-series-17'
       ]],
       [165000, 'Шкаф или библиотека шириной до 2,4 м', 'Корпус, книжные полки и закрытые секции. По модели — рамочные фасады, одна остеклённая секция или откидная столешница. Отдельный стол считают отдельно.', [
         'office-green-library', 'office-library', 'offices-series-03', 'offices-series-14', 'offices-series-19', 'offices-series-24'
       ]],
       [195000, 'Стол и секции хранения по стене шириной до 2,4 м', 'Рабочая поверхность, базовые опоры, тумба, шкафы или полки по модели и фурнитура. По модели — настенная панель, витрина или рабочая ниша.', [
-        'office-complete', 'offices-series-07', 'offices-series-10', 'offices-series-15', 'offices-series-21', 'offices-series-25'
+        'office-complete', 'offices-series-07', 'offices-series-10', 'offices-series-15', 'offices-series-21', 'offices-series-25', 'offices-series-22'
       ]]
     ]
   };
