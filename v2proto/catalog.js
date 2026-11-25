@@ -8,6 +8,7 @@
   let selected='all',filters={style:'',tone:'',type:''},sort='default',detail,previousFocus;
   const pageSize = 12;
   let visibleCount = pageSize;
+  let moreButton, moreObserver;
   const current=()=>solutions.filter(s=>s.category===selected);
   const nav=()=>`<nav class="direction-nav container" aria-label="Разделы каталога"><a href="catalog.html" ${selected==='all'?'aria-current="page"':''}>Все решения</a>${Object.entries(sections).map(([id,s])=>`<a href="catalog.html?category=${id}" ${selected===id?'aria-current="page"':''}>${s.name}</a>`).join('')}</nav>`;
   const quiz=(label='Рассчитать стоимость',className='button button-primary')=>`<button class="${className}" data-quiz="${selected==='all'?'':selected}">${label} <span aria-hidden="true">↗</span></button>`;
@@ -79,7 +80,18 @@
     const reviews=document.getElementById('catalog-reviews-template')?.innerHTML||'';
     return `${hero()}${nav()}${selected==='all'?overview():filtersMarkup()}${quizBanner()}${approach()}${reviews}${faq()}${help()}`;
   }
-  function refresh({ append = false } = {}){
+  function observeMore(){
+    if (!moreObserver) return;
+    moreObserver.unobserve(moreButton);
+    moreObserver.takeRecords();
+    if (!moreButton.hidden) moreObserver.observe(moreButton);
+  }
+  function loadMore({ focusNew = false } = {}){
+    if (moreButton.hidden) return;
+    visibleCount += pageSize;
+    refresh({ append: true, focusNew });
+  }
+  function refresh({ append = false, focusNew = false } = {}){
     const grid=document.getElementById('solutions-grid');if(!grid)return;
     const items=current().filter(s=>Object.entries(filters).every(([key,value])=>!value||s[key]===value));
     if(sort==='name')items.sort((a,b)=>a.name.localeCompare(b.name,'ru'));
@@ -88,7 +100,7 @@
     const result = items.slice(before, visibleCount);
     if (append) {
       grid.insertAdjacentHTML('beforeend', result.map(card).join(''));
-      grid.children[before]?.querySelector('.solution-picture')?.focus();
+      if (focusNew) grid.children[before]?.querySelector('.solution-picture')?.focus();
     } else {
       grid.innerHTML = result.length ? result.map(card).join('') : `<div class="catalog-empty"><h3>Модели не найдены</h3><p>Измените фильтры или сбросьте их, чтобы увидеть все модели раздела.</p><button class="button button-outline" data-catalog-reset>Сбросить фильтры</button></div>`;
     }
@@ -96,9 +108,10 @@
     document.getElementById('catalog-result-count').textContent = shown < items.length
       ? `Показано ${shown} из ${items.length}`
       : `Найдено: ${items.length}`;
-    const more = document.querySelector('[data-catalog-more]');
-    more.hidden = shown >= items.length;
-    if (!more.hidden) more.textContent = `Показать ещё ${Math.min(pageSize, items.length - shown)}`;
+    moreButton.hidden = shown >= items.length;
+    if (!moreButton.hidden) moreButton.textContent = `Показать ещё ${Math.min(pageSize, items.length - shown)}`;
+    observeMore();
+    if (append) return;
     document.querySelectorAll('[data-catalog-tag]').forEach(button=>button.setAttribute('aria-pressed',String(filters[button.dataset.field]===button.dataset.catalogTag)));
     document.querySelectorAll('[data-catalog-facet]').forEach(select=>select.value=filters[select.dataset.catalogFacet]);
     const active=Object.values(filters).some(Boolean);document.querySelectorAll('.catalog-reset').forEach(button=>button.hidden=!active);
@@ -127,17 +140,22 @@
         directions.scrollLeft += link.left - nav.left - (nav.width - link.width) / 2;
       }
     }
+    moreButton = document.querySelector('[data-catalog-more]');
+    if (moreButton) {
+      if ('IntersectionObserver' in window) {
+        moreObserver = new IntersectionObserver(entries => {
+          if (entries.at(-1).isIntersecting && document.activeElement !== moreButton) loadMore();
+        }, { rootMargin: '0px 0px 450px' });
+        moreButton.addEventListener('blur', observeMore);
+      }
+      moreButton.addEventListener('click', () => loadMore({ focusNew: true }));
+    }
     refresh();
     document.addEventListener('change',event=>{
       const facet=event.target.closest('[data-catalog-facet]');if(facet){filters[facet.dataset.catalogFacet]=facet.value;refresh();}
       if(event.target.matches('[data-catalog-sort]')){sort=event.target.value;refresh();}
     });
     document.addEventListener('click',event=>{
-      if (event.target.closest('[data-catalog-more]')) {
-        visibleCount += pageSize;
-        refresh({ append: true });
-        return;
-      }
       const tag=event.target.closest('[data-catalog-tag]');if(tag){const field=tag.dataset.field;filters[field]=filters[field]===tag.dataset.catalogTag?'':tag.dataset.catalogTag;refresh();}
       const reset=event.target.closest('[data-catalog-reset]');
       if(reset){
